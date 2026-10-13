@@ -9,8 +9,9 @@ No cambiar VERSION a 1.0.0 hasta completar y guardar evidencia de los puntos abi
 - [x] Guardado cancelable y sin sobrescritura con limpieza de staging.
 - [x] Misma secuencia y diff para informe y subrayado.
 - [x] Límites de renderizado y compilación sin advertencias.
-- [x] Workflow nativo del motor e interfaz pasó en Windows/macOS/Linux: https://github.com/TastingRogue/AiOPDF/actions/runs/38425406523 (commit d6c145f). La aceptación de los instaladores del nuevo commit se registra por separado.
-- [ ] Instalar, actualizar y desinstalar la candidata en equipos limpios de cada plataforma anunciada.
+- [x] Workflow nativo del motor e interfaz pasó en Windows/macOS/Linux: https://github.com/TastingRogue/AiOPDF/actions/runs/38428372534 (commit 427fb8b, RC3).
+- [x] Instalación, motor/OCR instalado, arranque UI, reinstalación de la misma versión y retirada en runners nativos Windows x64, Ubuntu 24.04 amd64 y macOS 15 arm64: https://github.com/TastingRogue/AiOPDF/actions/runs/38428372557 (commit 427fb8b).
+- [ ] Aceptación humana en equipos limpios, incluidos actualización entre versiones y comportamiento al descargar paquetes sin firma/notarización. Reinstalar el mismo build no demuestra actualización.
 - [ ] Firmar EXE e instalador Windows con certificado del propietario.
 - [ ] Generar y firmar DMG; ejecutar notarización/stapling y validarlo en Mac.
 - [ ] Ampliar corpus de aceptación con formularios, documentos firmados, escaneos variados, EXIF y datos autorizados.

@@ -1,6 +1,6 @@
 # Ruta a AiOPDF 1.0
 
-Estado actual: 1.0.0-rc.2, candidata pendiente de aceptación y distribución nativa. Veinticinco herramientas implementadas con límites descritos en README.md. División por páginas/rangos/grupos, compresión sin pérdida, regiones interactivas y comparación de contenido con subrayados ya existen.
+Estado actual: 1.0.0-rc.3, candidata pendiente de aceptación y distribución nativa. Veinticinco herramientas implementadas con límites descritos en README.md. División por páginas/rangos/grupos, compresión sin pérdida, regiones interactivas y comparación de contenido con subrayados ya existen.
 
 La prioridad es estabilizar y validar lo implementado. Hallazgos, evidencias, prioridades y criterios de aceptación: [auditoría de 1.0](docs/AUDIT-1.0.md).
 

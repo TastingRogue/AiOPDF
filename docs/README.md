@@ -7,6 +7,7 @@
 | [Languages](LOCALIZATION.md) | JSON catalogs, fallback, explicit bindings and language tests |
 | [Roadmap](../ROADMAP.md) | Priorities and scope for stable 1.0 |
 | [Release checklist](RELEASE-CHECKLIST.md) | Native acceptance, signatures and remaining release gates |
+| [Installers](INSTALLERS.md) | Native package construction, lifecycle evidence and signing prerequisites |
 | [Security](../.github/SECURITY.md) | Private vulnerability reports |
 
 ## Validation and implementation history

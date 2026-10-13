@@ -4,9 +4,9 @@
 
 ## Install and choose your language
 
-Download the Windows x64 installer from the [candidate release](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.2). Run it, then open AiOPDF. No account or .NET SDK is needed. This candidate is unsigned; its release includes a SHA-256 manifest.
+Download the Windows x64 installer from the [candidate release](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.3). Run it, then open AiOPDF. No account or .NET SDK is needed. This candidate is unsigned; its release includes a SHA-256 manifest.
 
-Choose **Español** or **English** in the header. The choice is saved locally and does not change your document content. macOS/Linux installation acceptance remains pending; see the [release checklist](RELEASE-CHECKLIST.md).
+Choose **Español** or **English** in the header. The choice is saved locally and does not change your document content. For the Apple Silicon DMG and Ubuntu amd64 DEB, see the [installer guide](INSTALLERS.md), including tested targets and remaining signing/acceptance requirements.
 
 ## Process a document
 

@@ -5,18 +5,18 @@
   <p>A desktop PDF toolbox that keeps document processing local.</p>
 
 [![MIT license](https://img.shields.io/badge/license-MIT-5a3fc0)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0--rc.2-f5bc65)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.0--rc.3-f5bc65)](CHANGELOG.md)
 [![Validation](https://github.com/TastingRogue/AiOPDF/actions/workflows/validate.yml/badge.svg)](https://github.com/TastingRogue/AiOPDF/actions/workflows/validate.yml)
 [![Languages](https://img.shields.io/badge/languages-English%20%2F%20Espa%C3%B1ol-26756a)](docs/LOCALIZATION.md)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-aa586b)](https://github.com/sponsors/TastingRogue)
 
-**[Download for Windows](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.2)** · **[Read in Spanish](README.es.md)** · **[User guide](docs/USER_MANUAL.md)**
+**[Download for Windows, macOS and Linux](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.3)** · **[Read in Spanish](README.es.md)** · **[User guide](docs/USER_MANUAL.md)**
 </div>
 
 AiOPDF combines 25 PDF tools with a simple workflow: choose a tool, add local files, review the result and save a copy where you want. No account, document upload, browser or localhost service is required. The native libraries and Latin-alphabet OCR models are included in the desktop package.
 
 > [!IMPORTANT]
-> **1.0.0-rc.2 is a release candidate, not a stable 1.0 release.** The Windows installer is unsigned. macOS and Linux packaging exists but native installation, accessibility and broader compatibility acceptance remain open. See the [release checklist](docs/RELEASE-CHECKLIST.md).
+> **1.0.0-rc.3 is a release candidate, not a stable 1.0 release.** Windows signing, macOS Developer ID/notarization, human accessibility and broader compatibility acceptance remain open. Installer lifecycle evidence is tracked in the [installer guide](docs/INSTALLERS.md). See the [release checklist](docs/RELEASE-CHECKLIST.md).
 
 **Using AiOPDF:** [Screenshots](#screenshots) · [Features](#features) · [Installation](#installation) · [Privacy](#privacy-and-saving) · [Limitations](#know-the-limits)
 
@@ -64,15 +64,15 @@ Also includes drag-and-drop input, previews, progress, cancellation and a reusab
 
 ### Windows x64
 
-1. Open the [1.0.0-rc.2 release](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.2).
-2. Download `AiOPDF-1.0.0-rc.2-windows-x64-setup.exe` and install it for your user.
+1. Open the [1.0.0-rc.3 release](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.3).
+2. Download `AiOPDF-1.0.0-rc.3-windows-x64-setup.exe` and install it for your user.
 3. Open AiOPDF, choose a tool and add files.
 
-The installed application does not require the .NET SDK. The candidate installer is unsigned; use the SHA-256 manifest attached to the release to verify the download. A matching hash confirms file integrity, not publisher identity.
+The installed application does not require the .NET SDK. The candidate installer is unsigned; use SHA256SUMS.txt attached to the release to verify the download. A matching hash confirms file integrity, not publisher identity.
 
 ### macOS and Linux
 
-The source supports macOS Intel/Apple Silicon and Linux x64/ARM64. Packaging scripts are provided, but these platforms are still undergoing acceptance. They are not advertised as validated release downloads.
+The candidate release includes a DMG for Apple Silicon Macs and a DEB for Ubuntu 24.04 amd64. Copy AiOPDF.app to Applications from the DMG, or install the DEB with `sudo apt install ./AiOPDF-1.0.0-rc.3-linux-amd64.deb`. The DMG is ad-hoc signed and is not notarized; macOS may block opening it. Native CI tests cover macOS 15 arm64 and Ubuntu 24.04 amd64. Intel Mac, ARM Linux, other OS versions and human accessibility acceptance remain open. See the [installer evidence and signing requirements](docs/INSTALLERS.md).
 
 See the [user guide](docs/USER_MANUAL.md) and [release checklist](docs/RELEASE-CHECKLIST.md).
 
