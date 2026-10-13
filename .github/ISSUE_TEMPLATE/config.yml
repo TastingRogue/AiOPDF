@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability / Vulnerabilidad de seguridad
+    url: https://github.com/TastingRogue/AiOPDF/security/advisories/new
+    about: Report privately. Do not attach sensitive documents to public issues.
+  - name: User guide / Manual de uso
+    url: https://github.com/TastingRogue/AiOPDF/blob/main/docs/USER_MANUAL.es.md
+    about: How to process, review and save documents.

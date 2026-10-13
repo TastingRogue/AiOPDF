@@ -1,0 +1,22 @@
+name: Feature request / Proponer una función
+description: Suggest an improvement with a concrete use case.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case / Problema o caso de uso
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior / Comportamiento propuesto
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and examples / Alternativas y ejemplos
+      description: Use synthetic examples. Explain how this preserves local document processing.

@@ -1,0 +1,26 @@
+name: Translation / Traducción
+description: Suggest a language or fix wording in an existing translation.
+title: "[Language]: "
+labels: [documentation]
+body:
+  - type: input
+    id: language
+    attributes:
+      label: Language and code / Idioma y código
+      placeholder: English (en), Español (es), Français (fr)
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text or missing language / Texto actual o idioma que falta
+      description: Include the resource key or screen when possible.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed text / Texto propuesto
+      description: Preserve placeholders such as "{0}" and "{1}".
+    validations:
+      required: true

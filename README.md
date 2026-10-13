@@ -1,83 +1,147 @@
-﻿# AiOPDF 1.0.0-rc.2
+<div align="center">
+  <img src="src/AiOPDF/Assets/app-icon-256.png" alt="AiOPDF logo" width="96" />
+  <h1>AiOPDF</h1>
+  <p><strong>Your PDFs. Your computer.</strong></p>
+  <p>A desktop PDF toolbox that keeps document processing local.</p>
 
-Aplicación de escritorio en español e inglés para procesar PDF localmente. C#/.NET 10 y Avalonia, sin servidor HTTP, navegador ni localhost. El usuario instala una aplicación; las bibliotecas nativas y modelos OCR vienen incluidos.
+[![MIT license](https://img.shields.io/badge/license-MIT-5a3fc0)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0--rc.2-f5bc65)](CHANGELOG.md)
+[![Validation](https://github.com/TastingRogue/AiOPDF/actions/workflows/validate.yml/badge.svg)](https://github.com/TastingRogue/AiOPDF/actions/workflows/validate.yml)
+[![Languages](https://img.shields.io/badge/languages-English%20%2F%20Espa%C3%B1ol-26756a)](docs/LOCALIZATION.md)
+[![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-aa586b)](https://github.com/sponsors/TastingRogue)
 
-## Descargar y probar
+**[Download for Windows](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.2)** · **[Read in Spanish](README.es.md)** · **[User guide](docs/USER_MANUAL.md)**
+</div>
 
-Instalador candidato Windows x64: `artifacts/installers/AiOPDF-1.0.0-rc.2-windows-x64-setup.exe`. Instalación por usuario sin exigir SDK ni permisos de administrador. También se puede abrir `artifacts/windows-x64-1.0.0-rc.2/AiOPDF.exe` directamente. Esta candidata aún no es la versión estable: ver docs/PROGRESS-1.0-RC1.md y docs/RELEASE-CHECKLIST.md.
+AiOPDF combines 25 PDF tools with a simple workflow: choose a tool, add local files, review the result and save a copy where you want. No account, document upload, browser or localhost service is required. The native libraries and Latin-alphabet OCR models are included in the desktop package.
 
-## Funciones implementadas
+> [!IMPORTANT]
+> **1.0.0-rc.2 is a release candidate, not a stable 1.0 release.** The Windows installer is unsigned. macOS and Linux packaging exists but native installation, accessibility and broader compatibility acceptance remain open. See the [release checklist](docs/RELEASE-CHECKLIST.md).
 
-25 herramientas con selección y arrastre de archivos, búsqueda, categorías, miniaturas, orden visual, progreso y cancelación:
+**Using AiOPDF:** [Screenshots](#screenshots) · [Features](#features) · [Installation](#installation) · [Privacy](#privacy-and-saving) · [Limitations](#know-the-limits)
 
-- Unir, organizar/extraer/duplicar, dividir por páginas, rangos o grupos, eliminar y rotar.
-- JPG/PNG/WebP a PDF; PDF a JPG/PNG; extracción de texto.
-- Marca de agua, numeración, recorte y edición o limpieza de metadatos.
-- Cifrado AES-256, eliminación de contraseña conocida y censura de una región.
-- Rasterizado, compresión sin pérdida, escala de grises y comparación del texto de dos versiones.
-- OCR local latino a texto o PDF buscable.
-- Exportaciones básicas a Word, Excel y diapositivas.
+**Contributing:** [Development](#development) · [Contribution guide](CONTRIBUTING.md) · [Add a language](docs/LOCALIZATION.md) · [Roadmap](ROADMAP.md) · [Security](.github/SECURITY.md)
 
-Los originales se conservan. Los resultados se guardan con nombre nuevo y no se sobrescriben archivos existentes. La acción prepara una copia temporal para revisar; Guardar copia elige el destino final. Los temporales de revisión se eliminan al cerrar normalmente; tras una interrupción, las sesiones abandonadas se limpian al volver a iniciar sin borrar sesiones activas. Una salida PDF puede continuar en otra herramienta.
+## Screenshots
 
-## Límites actuales
+Screenshots show the application with synthetic documents or empty workspaces. No private user documents are included.
 
-La compresión optimiza sin rasterizar; si no reduce el tamaño, guarda una copia idéntica y lo indica. Rasterizado, escala de grises y censura convierten las páginas seleccionadas en imágenes: pierden texto, formularios y enlaces en esas páginas y conservan las demás. OCR a PDF también conserva las páginas no seleccionadas. El recorte solo oculta márgenes. Texto a Word exporta párrafos; Páginas a diapositivas exporta imágenes, sin reconstruir contenido editable.
+### A toolbox you can browse
 
-Word exporta texto sin conservar el diseño; Excel coloca líneas en filas sin reconstruir tablas; diapositivas contiene imágenes no editables. OCR usa modelos locales de alfabeto latino y necesita revisión humana. Comparar PDFs compara palabras por página: ignora espacios y saltos de línea, muestra añadidos/eliminados con contexto y permite exportar informes TXT/JSON. No compara imágenes ni interpreta el significado; las páginas sin texto extraíble quedan pendientes de OCR. No alinea automáticamente páginas desplazadas entre versiones. En páginas muy largas, los grandes bloques modificados se muestran como reemplazos para limitar memoria. Dividir permite un PDF por página, por rango o cada N páginas.
+Search for a tool or explore the categories. Switch between Spanish and English from the header.
 
-Aún faltan conversión de Office a PDF, reconstrucción avanzada de Office, firmas digitales, edición de formularios, PDF/A, reparación y otras funciones del inventario en ROADMAP.md. No se afirma paridad completa con iLovePDF o Stirling-PDF.
+![AiOPDF tools in English](docs/screenshots/localization-home-en.png)
 
-## Plataformas y validación
+### Review content changes
 
-En Windows pasaron las comprobaciones de operaciones y los 25 flujos de guardado desde la interfaz, además de navegación/renderizado. El ejecutable empaquetado inició y no mostró conexiones TCP ni endpoints UDP durante la observación. Esto no sustituye una auditoría de red ni pruebas con un corpus amplio de documentos reales.
+Compare two versions, read complete pages side by side and navigate added or removed text. Saving a report is optional.
 
-Se generaron paquetes autónomos para Windows x64, macOS Intel/Apple Silicon y Linux x64/ARM64. Mac y Linux aún no se ejecutaron en hardware de esos sistemas. Los scripts generan DMG en Mac y DEB inicial para Debian 13 en Linux; requieren validación, y macOS requiere firma y notarización para distribución normal.
+![PDF comparison with synthetic documents](docs/screenshots/comparison-reader.png)
 
-## Compilar
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/visual-crop.png" alt="Draw a crop region on a synthetic PDF" /></td>
+    <td width="50%"><img src="docs/screenshots/reviewed-split.png" alt="Review split output before saving a copy" /></td>
+  </tr>
+</table>
 
-SDK local: `.tools/dotnet/dotnet.exe`; también se puede usar un SDK .NET 10 instalado.
+Some captures show earlier candidate builds. More examples are in [docs/screenshots](docs/screenshots).
 
-```powershell
-& ./.tools/dotnet/dotnet.exe run --project src/AiOPDF
-& ./.tools/dotnet/dotnet.exe run --project tests/AiOPDF.Checks -c Release
-& ./.tools/dotnet/dotnet.exe run --project tests/AiOPDF.Checks -c Release -- --ui
-& ./scripts/publish.ps1 -Runtime win-x64
-& ./.tools/inno/tools/ISCC.exe packaging/windows.iss
+## Features
+
+| Category | Tools |
+| --- | --- |
+| Organize | Merge, organize/extract/duplicate pages, split, remove pages, rotate |
+| Convert | Images to PDF, PDF to PNG/JPG, extract text, OCR to PDF/text, text to Word/Excel, pages to slides |
+| Edit | Watermark, page numbers, crop, metadata |
+| Security | AES-256 protection, remove a known password, redact a region |
+| Optimize | Rasterize, lossless compression, grayscale |
+| Review | Compare text with page-level underlines and optional TXT/JSON reports |
+
+Also includes drag-and-drop input, previews, progress, cancellation and a reusable reviewed result. Translation modules are JSON files; [adding a language](docs/LOCALIZATION.md) does not require changing the PDF engine.
+
+## Installation
+
+### Windows x64
+
+1. Open the [1.0.0-rc.2 release](https://github.com/TastingRogue/AiOPDF/releases/tag/v1.0.0-rc.2).
+2. Download `AiOPDF-1.0.0-rc.2-windows-x64-setup.exe` and install it for your user.
+3. Open AiOPDF, choose a tool and add files.
+
+The installed application does not require the .NET SDK. The candidate installer is unsigned; use the SHA-256 manifest attached to the release to verify the download. A matching hash confirms file integrity, not publisher identity.
+
+### macOS and Linux
+
+The source supports macOS Intel/Apple Silicon and Linux x64/ARM64. Packaging scripts are provided, but these platforms are still undergoing acceptance. They are not advertised as validated release downloads.
+
+See the [user guide](docs/USER_MANUAL.md) and [release checklist](docs/RELEASE-CHECKLIST.md).
+
+## Privacy and saving
+
+- Processing happens on your computer. No document-upload workflow or local web server is used.
+- The action prepares a temporary result for review. **Save copy** asks for the final location.
+- Existing destination files are preserved; choose a new name for the result.
+- Review temporaries are removed on normal close. Abandoned sessions are recovered on the next launch without deleting another active session.
+- Exported results remain in the location you selected until you remove them yourself.
+
+Local processing does not make an input PDF safe or remove sensitive information automatically. Review output before sharing it. See [security reporting](.github/SECURITY.md).
+
+## Know the limits
+
+| Tool | Current behavior |
+| --- | --- |
+| Compression | Lossless optimization. If it cannot reduce size, saves an identical copy and tells you. |
+| Crop | Hides margins; does not remove their content. Use redaction to remove a region. |
+| Rasterize / grayscale / redact | Selected pages become images and lose selectable text, forms and links. Other pages are preserved. |
+| OCR | Included Latin-alphabet models; recognized text needs review. Searchable PDF pages are rasterized with a hidden text layer. |
+| Comparison | Compares words by page number, ignoring spaces and line breaks. Does not compare images, meaning or align moved pages. Pages without extractable text require OCR. |
+| Office exports | Word exports text, Excel exports a line per row, slides contain page images. No reconstruction of tables or original layout. |
+
+Office-to-PDF, digital signatures, PDF/A, repair and advanced form editing are future work. AiOPDF does not claim feature parity with iLovePDF or Stirling-PDF. The interface and processing implementation are original; code from those projects is not included.
+
+## Development
+
+Install the .NET SDK specified in [global.json](global.json), then run these commands from the repository root:
+
+```sh
+git clone https://github.com/TastingRogue/AiOPDF.git
+cd AiOPDF
+dotnet restore tests/AiOPDF.Checks --locked-mode
+dotnet build tests/AiOPDF.Checks -c Release --no-restore -warnaserror
+dotnet run --project src/AiOPDF
 ```
 
-En Mac: `bash scripts/package-macos.sh arm64` o `x64`. En Linux: `bash scripts/package-linux.sh x64` o `arm64`. Los scripts requieren SDK .NET y las herramientas de empaquetado del sistema. La aplicación instalada no requiere SDK.
+```sh
+dotnet run --project tests/AiOPDF.Checks -c Release -- --localization
+dotnet run --project tests/AiOPDF.Checks -c Release -- --improvements-en
+```
 
-## Diseño y dependencias
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full check matrix, native prerequisites and packaging commands. A developer's local `.tools` directory is not included in this repository.
 
-Interfaz original, 25 iconos vectoriales propios, icono de aplicación e ilustraciones generadas para AiOPDF. Ver docs/ASSETS.md y docs/screenshots. No se copió código de Stirling-PDF ni de iLovePDF. El motor excluido de Stirling tiene condiciones diferentes de su licencia general.
+| Component | Technology |
+| --- | --- |
+| Application | C# / .NET 10 / Avalonia |
+| PDF operations | PDFsharp, PdfPig, PDFium / PDFtoImage |
+| Images | Skia |
+| Offline OCR | RapidOcrNet / ONNX Runtime |
+| Office output | Open XML SDK |
+| Validation | Native engine checks and Avalonia Headless UI checks |
 
-Bibliotecas principales: Avalonia, PDFsharp, PDFium/PDFtoImage, PdfPig, Skia, RapidOcrNet/ONNX Runtime y Open XML SDK. Licencias y avisos en docs/THIRD-PARTY-NOTICES.md y docs/licenses; se incluyen en los paquetes.
+```text
+src/AiOPDF/           Application, PDF tools, original assets and language modules
+tests/AiOPDF.Checks/  Synthetic documents and regression checks
+packaging/           Windows, macOS and Linux package definitions
+scripts/             Publishing, packaging and optional signing
+docs/                User guide, audits, validation, licenses and screenshots
+.github/             CI, contribution templates and community policies
+```
 
+## Support and contribute
 
+[Report a bug](https://github.com/TastingRogue/AiOPDF/issues/new/choose), suggest a feature or improve a translation. Small changes with clear reproduction steps and synthetic files are especially useful. Read the [contribution guide](CONTRIBUTING.md) and [code of conduct](.github/CODE_OF_CONDUCT.md).
 
+You can also star the repository or support [TastingRogue on GitHub Sponsors](https://github.com/sponsors/TastingRogue), the same maintainer behind [HomeLedger](https://github.com/TastingRogue/HomeLedger).
 
+## License
 
-El rediseño 0.4 añade controles visuales propios, navegación lateral y una ilustración vectorial original. Ver docs/DESIGN.md y docs/UX-RESEARCH.md. Los diálogos de archivos siguen siendo los del sistema operativo.
-
-
-
-PDF de prueba incluidos en output/pdf/AiOPDF-prueba-A.pdf y AiOPDF-prueba-B.pdf. Los 25 flujos de la interfaz se ejecutaron con cada documento (50 ejecuciones), usando imágenes derivadas de sus páginas para Imágenes a PDF. Contienen tablas ficticias, color, orientación horizontal y una página escaneada. Ver docs/VALIDATION.md.
-
-
-
-
-
-La versión 0.6.0 añade revisión antes de guardar, continuación con resultados, división por rangos, selección visual de regiones y visor paralelo de comparación. Ver [implementación y validación](docs/REPORT-IMPROVEMENTS.md).
-
-
-Estado para lanzamiento: [auditoría de versión 1.0](docs/AUDIT-1.0.md).
-
-## Licencia
-
-El código de AiOPDF se distribuye bajo MIT (LICENSE). Las bibliotecas, modelos y recursos conservan sus licencias respectivas; ver los avisos incluidos.
-
-
-## Idiomas
-
-Selector de español e inglés en la cabecera, con cambio inmediato y preferencia local persistente. Los idiomas son módulos JSON; se pueden incorporar más sin cambiar el motor. Guía, formato y comprobaciones en [docs/LOCALIZATION.md](docs/LOCALIZATION.md).
+AiOPDF code is licensed under [MIT](LICENSE). Dependencies, OCR models, fonts and artwork retain their own applicable licenses; see [third-party notices](docs/THIRD-PARTY-NOTICES.md) and [asset provenance](docs/ASSETS.md).

@@ -1,0 +1,46 @@
+name: Bug report / Reportar un problema
+description: Report a reproducible problem with a tool, interface or installation.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Use synthetic documents. Do not upload personal PDFs, passwords or certificates. Report security flaws privately. / Usa documentos sintéticos; no adjuntes datos personales."
+  - type: input
+    id: version
+    attributes:
+      label: App version / Versión
+      placeholder: 1.0.0-rc.2
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Operating system and architecture / Sistema y arquitectura
+      placeholder: Windows 11 x64, macOS arm64, Linux x64
+    validations:
+      required: true
+  - type: input
+    id: tool
+    attributes:
+      label: Tool or screen / Herramienta o vista
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / Pasos para reproducir
+      placeholder: "1. Open…\n2. Select…\n3. Run…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior / Resultado esperado y actual
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Synthetic example or sanitized screenshot / Ejemplo sintético o captura
+      description: Remove personal paths and document content before attaching evidence.

@@ -2,6 +2,9 @@
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
+concurrency:
+  group: validation-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   native-checks:
     strategy:
@@ -31,3 +34,11 @@ jobs:
           }
       - name: Vulnerability inventory
         run: dotnet list src/AiOPDF/AiOPDF.csproj package --vulnerable --include-transitive
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: validation-${{ matrix.os }}
+          path: artifacts/ci-*.log
+          if-no-files-found: ignore
+          retention-days: 14

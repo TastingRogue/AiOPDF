@@ -1,4 +1,4 @@
-﻿using AiOPDF;
+using AiOPDF;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -86,10 +86,12 @@ static class LocalizationChecks
         Check(!L10n.SetLanguage("zz") && L10n.Code == "en", "unsupported language does not change state");
         File.WriteAllText(L10n.PreferencePath, "not-json"); L10n.Initialize(L10n.PreferencePath); Check(L10n.Code == "es", "corrupt preferences safely fall back to Spanish");
         Check(L10n.SetLanguage("en") && File.ReadAllText(L10n.PreferencePath).Contains("en"), "new selection repairs corrupt preferences");
-        L10n.SetLanguage("en", false); window.ShowHome(); window.Width = 1280; window.Height = 900; Dispatcher.UIThread.RunJobs();
+        L10n.SetLanguage("en", false); window.ShowHome(); Dispatcher.UIThread.RunJobs(); window.GetVisualDescendants().OfType<TextBox>().Single().Text = ""; window.Width = 1280; window.Height = 900; Dispatcher.UIThread.RunJobs();
         using (var frame = window.CaptureRenderedFrame()) frame!.Save(Path.Combine(root, "home-en.png"), PngBitmapEncoderOptions.Default);
         window.SelectTool(ToolCatalog.All.Single(t => t.Kind == ToolKind.Watermark)); window.Width = 640; window.Height = 820; Dispatcher.UIThread.RunJobs();
         using (var frame = window.CaptureRenderedFrame()) frame!.Save(Path.Combine(root, "watermark-en-640.png"), PngBitmapEncoderOptions.Default);
         L10n.SetLanguage("es", false); window.Close(); Console.WriteLine("Evidence: " + root);
     }
 }
+
+
