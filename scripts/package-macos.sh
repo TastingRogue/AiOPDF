@@ -8,7 +8,7 @@ stage="$(mktemp -d "$root/artifacts-macos-XXXXXX")"
 trap 'rm -rf "$stage"' EXIT
 app="$stage/image/AiOPDF.app"
 mkdir -p "$root/artifacts/installers" "$app/Contents/MacOS" "$app/Contents/Resources/AiOPDF.iconset"
-dotnet publish "$root/src/AiOPDF/AiOPDF.csproj" -c Release -r "osx-$arch" --self-contained true -p:RestoreLockedMode=true -o "$stage/publish"
+dotnet publish "$root/src/AiOPDF/AiOPDF.csproj" -c Release -r "osx-$arch" --self-contained true -p:RestoreLockedMode=true -p:PublishSingleFile=true -o "$stage/publish"
 cp -R "$stage/publish/." "$app/Contents/MacOS/"
 cp "$root/packaging/Info.plist" "$app/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${version%%-*}" "$app/Contents/Info.plist"

@@ -5,7 +5,7 @@ version="$(tr -d '\r\n' < "$root/VERSION")"
 arch="${1:-x64}"
 case "$arch" in x64) debarch=amd64;; arm64) debarch=arm64;; *) echo 'Use x64 or arm64'; exit 1;; esac
 # The tilde ensures a release candidate upgrades correctly to the stable version.
-debversion="${version/-/~}"
+debversion="${version/-/\~}"
 stage="$(mktemp -d "$root/artifacts-linux-XXXXXX")"
 trap 'rm -rf "$stage"' EXIT
 out="$stage/publish"
