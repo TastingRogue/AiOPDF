@@ -12,6 +12,14 @@ dotnet publish "$root/src/AiOPDF/AiOPDF.csproj" -c Release -r "osx-$arch" --self
 cp -R "$stage/publish/." "$app/Contents/MacOS/"
 # Apple treats MacOS entries as code; OCR data belongs in Resources.
 mv "$app/Contents/MacOS/models" "$app/Contents/Resources/models"
+# Debug symbols and other non-Mach-O data must also be sealed as resources.
+while IFS= read -r -d '' data; do
+  if ! file "$data" | grep -q 'Mach-O'; then
+    relative="${data#"$app/Contents/MacOS/"}"
+    mkdir -p "$(dirname "$app/Contents/Resources/$relative")"
+    mv "$data" "$app/Contents/Resources/$relative"
+  fi
+done < <(find "$app/Contents/MacOS" -type f -print0)
 cp "$root/packaging/Info.plist" "$app/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${version%%-*}" "$app/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${version%%-*}" "$app/Contents/Info.plist"
