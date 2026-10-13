@@ -9,7 +9,7 @@ No cambiar VERSION a 1.0.0 hasta completar y guardar evidencia de los puntos abi
 - [x] Guardado cancelable y sin sobrescritura con limpieza de staging.
 - [x] Misma secuencia y diff para informe y subrayado.
 - [x] Límites de renderizado y compilación sin advertencias.
-- [ ] Ejecutar workflow nativo en Windows/macOS/Linux y conservar logs. Configurar workflow no demuestra que haya pasado.
+- [x] Workflow nativo del motor e interfaz pasó en Windows/macOS/Linux: https://github.com/TastingRogue/AiOPDF/actions/runs/38425406523 (commit d6c145f). La aceptación de los instaladores del nuevo commit se registra por separado.
 - [ ] Instalar, actualizar y desinstalar la candidata en equipos limpios de cada plataforma anunciada.
 - [ ] Firmar EXE e instalador Windows con certificado del propietario.
 - [ ] Generar y firmar DMG; ejecutar notarización/stapling y validarlo en Mac.
@@ -22,3 +22,8 @@ No cambiar VERSION a 1.0.0 hasta completar y guardar evidencia de los puntos abi
 Procesamiento nativo: la cancelación se comprueba entre operaciones; una llamada nativa de renderizado ya iniciada puede tardar en devolver el control. Los límites de recursos no son un aislamiento contra todo PDF malicioso.
 
 No se necesita servidor, localhost ni transmisión de documentos. Las pruebas de CI usan datos sintéticos. Las firmas requieren certificados que no se incorporan al repositorio ni se solicitan por chat.
+
+## Instaladores
+
+Consultar [INSTALLERS.md](INSTALLERS.md) para construcción, pruebas y requisitos de firma. No hay certificados del propietario disponibles todavía. Los resultados de CI no sustituyen la aceptación humana de accesibilidad y compatibilidad.
+

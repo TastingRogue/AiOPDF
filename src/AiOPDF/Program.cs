@@ -9,7 +9,15 @@ namespace AiOPDF;
 internal static class Program
 {
     [STAThread]
-    public static void Main(string[] args) => AppBuilder.Configure<App>().UsePlatformDetect().StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        if (args.Length == 2 && args[0] == "--package-check")
+        {
+            PackageCheck.Run(args[1]);
+            return;
+        }
+        AppBuilder.Configure<App>().UsePlatformDetect().StartWithClassicDesktopLifetime(args);
+    }
 }
 
 public sealed class App : Application

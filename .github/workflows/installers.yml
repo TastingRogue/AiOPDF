@@ -1,0 +1,75 @@
+name: Build and test installers
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'VERSION'
+      - 'packaging/**'
+      - 'scripts/package-*'
+      - 'scripts/test-package-*'
+      - 'src/AiOPDF/PackageCheck.cs'
+      - '.github/workflows/installers.yml'
+permissions:
+  contents: read
+concurrency:
+  group: installers-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  packages:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows-x64
+          - os: ubuntu-24.04
+            platform: linux-amd64
+          - os: macos-15
+            platform: macos-arm64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Windows compiler
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+      - name: Windows package and installation acceptance
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          ./scripts/package-windows.ps1 -Compiler 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
+          ./scripts/test-package-windows.ps1
+      - name: Linux package and installation acceptance
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb desktop-file-utils
+          bash scripts/package-linux.sh x64
+          bash scripts/test-package-linux.sh
+      - name: macOS package and installation acceptance
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          bash scripts/package-macos.sh arm64
+          bash scripts/test-package-macos.sh
+      - name: Package hashes
+        shell: pwsh
+        run: |
+          $lines = Get-ChildItem artifacts/installers -File | Sort-Object Name | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $($_.Name)" }
+          $lines | Set-Content artifacts/installers/SHA256SUMS-${{ matrix.platform }}.txt -Encoding utf8NoBOM
+      - name: Preserve packages and installation evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: installers-${{ matrix.platform }}
+          path: |
+            artifacts/installers/*
+            artifacts/package-check-*
+            artifacts/install-*.log
+          if-no-files-found: error
+          retention-days: 30
