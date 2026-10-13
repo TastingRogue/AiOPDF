@@ -16,7 +16,9 @@ internal static class Program
             PackageCheck.Run(args[1]);
             return;
         }
-        AppBuilder.Configure<App>().UsePlatformDetect().StartWithClassicDesktopLifetime(args);
+        AppBuilder.Configure<App>().UsePlatformDetect()
+            .With(new Avalonia.Media.FontManagerOptions { DefaultFamilyName = "avares://AiOPDF/Assets#Lato" })
+            .StartWithClassicDesktopLifetime(args);
     }
 }
 

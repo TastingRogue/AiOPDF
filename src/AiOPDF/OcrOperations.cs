@@ -12,6 +12,8 @@ public static class OcrOperations
     {
         using var ocr = new RapidOcr();
         var models = Path.Combine(AppContext.BaseDirectory, "models", "v5");
+        if (!Directory.Exists(models) && OperatingSystem.IsMacOS())
+            models = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources", "models", "v5"));
         progress?.Report("Cargando modelos OCR locales…"); token.ThrowIfCancellationRequested();
         ocr.InitModels(detPath: Path.Combine(models, "ch_PP-OCRv5_mobile_det.onnx"), clsPath: Path.Combine(models, "ch_PP-LCNet_x0_25_textline_ori_cls_mobile.onnx"),
             recPath: Path.Combine(models, "latin_PP-OCRv5_rec_mobile_infer.onnx"), keysPath: Path.Combine(models, "ppocrv5_latin_dict.txt"));

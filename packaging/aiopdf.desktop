@@ -5,5 +5,5 @@ Comment=Herramientas PDF locales y privadas
 Exec=AiOPDF
 Icon=aiopdf
 Terminal=false
-Categories=Office;Utility;
+Categories=Office;
 MimeType=application/pdf;

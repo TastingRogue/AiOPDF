@@ -25,7 +25,7 @@ Package: aiopdf
 Version: $debversion
 Architecture: $debarch
 Maintainer: TastingRogue <noreply@github.com>
-Depends: libx11-6, libice6, libsm6, libfontconfig1, libicu74 | libicu76, libgomp1, libc6 (>= 2.35), libstdc++6, zlib1g
+Depends: libx11-6, libice6, libsm6, libfontconfig1, fonts-dejavu-core, libicu74 | libicu76, libgomp1, libc6 (>= 2.35), libstdc++6, zlib1g
 Section: utils
 Priority: optional
 Homepage: https://github.com/TastingRogue/AiOPDF

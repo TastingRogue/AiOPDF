@@ -10,6 +10,8 @@ app="$stage/image/AiOPDF.app"
 mkdir -p "$root/artifacts/installers" "$app/Contents/MacOS" "$app/Contents/Resources/AiOPDF.iconset"
 dotnet publish "$root/src/AiOPDF/AiOPDF.csproj" -c Release -r "osx-$arch" --self-contained true -p:RestoreLockedMode=true -p:PublishSingleFile=true -o "$stage/publish"
 cp -R "$stage/publish/." "$app/Contents/MacOS/"
+# Apple treats MacOS entries as code; OCR data belongs in Resources.
+mv "$app/Contents/MacOS/models" "$app/Contents/Resources/models"
 cp "$root/packaging/Info.plist" "$app/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${version%%-*}" "$app/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${version%%-*}" "$app/Contents/Info.plist"
