@@ -2,6 +2,9 @@
 #define VersionHandle FileOpen(SourcePath + "..\VERSION")
 #define AppVersion Trim(FileRead(VersionHandle))
 #expr FileClose(VersionHandle)
+#ifndef PublishDir
+#define PublishDir "..\artifacts\windows-x64-" + AppVersion
+#endif
 [Setup]
 AppId={{8CC7E572-E669-41E9-9E89-BD1B62F3F422}
 AppName={#AppName}
@@ -33,7 +36,7 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
 
 [Files]
-Source: "..\artifacts\windows-x64-{#AppVersion}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\AiOPDF"; Filename: "{app}\AiOPDF.exe"

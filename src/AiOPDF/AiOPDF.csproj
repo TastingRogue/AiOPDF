@@ -8,6 +8,8 @@
     <ApplicationIcon>Assets/app-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Explicitly lock the bundler used by macOS single-file publishing. -->
+    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="10.0.12" PrivateAssets="all" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
     <PackageReference Include="PDFsharp" Version="6.2.4" />

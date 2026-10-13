@@ -1,4 +1,15 @@
-﻿# Changelog
+# Changelog
+
+## 1.0.0-rc.3
+
+- Instaladores autónomos Windows x64, DMG macOS Apple Silicon y DEB Ubuntu amd64.
+- Pruebas de instalación, motor/OCR instalado, arranque de interfaz, reinstalación y retirada en runners nativos.
+- Instalador Windows bilingüe, rutas de publicación limpias, dependencias Linux y orden de versiones Debian corregidos.
+- Bundle macOS con ensamblados integrados, verificación de firma y acceso directo a Applications.
+- Paquetes y evidencia SHA-256 conservados por el workflow de instaladores.
+
+La firma de Windows, notarización macOS y aceptación humana ampliada siguen pendientes.
+
 
 ## 1.0.0-rc.2
 
@@ -21,3 +32,4 @@ Continúan pendientes los requisitos de aceptación nativa y firma de la versió
 - Iconsets Mac @2x, ruta de notarización y script opcional de firma Windows.
 
 Esta es una candidata. Faltan aceptación nativa, firma y pruebas de compatibilidad ampliadas antes de anunciar 1.0 estable.
+

@@ -37,8 +37,9 @@ internal static class PackageCheck
             L10n.SetLanguage("es", false);
             if (L10n.Text("common.language") == "common.language") throw new InvalidOperationException("Spanish catalog missing.");
             L10n.SetLanguage("en", false);
+            if (L10n.Text("common.language") != "Language") throw new InvalidOperationException("English catalog missing.");
             checks.Add("Embedded es/en catalogs");
-            File.WriteAllText(Path.GetFullPath(reportPath), JsonSerializer.Serialize(new { success = true, version = typeof(App).Assembly.GetName().Version?.ToString(), runtime = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, checks }, new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(Path.GetFullPath(reportPath), JsonSerializer.Serialize(new { success = true, version = typeof(App).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false).Cast<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion, runtime = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, checks }, new JsonSerializerOptions { WriteIndented = true }));
         }
         finally { Directory.Delete(folder, recursive: true); }
     }

@@ -1,4 +1,4 @@
-param([ValidateSet('win-x64','linux-x64','linux-arm64','osx-x64','osx-arm64')][string]$Runtime = 'win-x64')
+param([ValidateSet('win-x64','linux-x64','linux-arm64','osx-x64','osx-arm64')][string]$Runtime = 'win-x64', [string]$OutputDirectory = '')
 $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path $PSScriptRoot -Parent
 $taskSdk = Join-Path $taskRoot '.tools/dotnet/dotnet.exe'
@@ -6,8 +6,8 @@ if (!(Test-Path -LiteralPath $taskSdk)) { $taskSdk = (Get-Command dotnet -ErrorA
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 $taskVersion = (Get-Content -LiteralPath (Join-Path $taskRoot 'VERSION') -Raw).Trim()
 $taskName = if ($Runtime -eq 'win-x64') { 'windows-x64-' + $taskVersion } else { $Runtime }
-$taskOutput = Join-Path $taskRoot "artifacts/$taskName"
-& $taskSdk publish (Join-Path $taskRoot 'src/AiOPDF/AiOPDF.csproj') -c Release -r $Runtime --self-contained true -o $taskOutput
+$taskOutput = if ($OutputDirectory) { [IO.Path]::GetFullPath($OutputDirectory) } else { Join-Path $taskRoot "artifacts/$taskName" }
+& $taskSdk publish (Join-Path $taskRoot 'src/AiOPDF/AiOPDF.csproj') -c Release -r $Runtime --self-contained true -p:RestoreLockedMode=true -o $taskOutput
 if ($LASTEXITCODE -ne 0) { throw 'Falló la publicación.' }
 Copy-Item -LiteralPath (Join-Path $taskRoot 'docs/THIRD-PARTY-NOTICES.md') -Destination $taskOutput
 Copy-Item -LiteralPath (Join-Path $taskRoot 'LICENSE') -Destination $taskOutput
