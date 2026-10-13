@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Automation;
@@ -94,7 +94,7 @@ public sealed partial class MainWindow : Window
             catch (ArgumentException) { }
             finally { updatingPageSelection = false; }
         };
-        list.ItemTemplate = new FuncDataTemplate<string>((path, _) => { var label = Label(Path.GetFileName(path ?? "")); label.Margin = new Thickness(8); label.TextWrapping = TextWrapping.NoWrap; label.TextTrimming = TextTrimming.CharacterEllipsis; ToolTip.SetTip(label, path); AutomationProperties.SetName(label, path ?? ""); return label; });
+        list.ItemTemplate = new FuncDataTemplate<string>((path, _) => { var label = Label(Path.GetFileName(path ?? ""), localize: false); label.Margin = new Thickness(8); label.TextWrapping = TextWrapping.NoWrap; label.TextTrimming = TextTrimming.CharacterEllipsis; ToolTip.SetTip(label, path); AutomationProperties.SetName(label, path ?? ""); return label; });
         list.SelectionChanged += async (_, _) => { if (!adding && cancellation == null && list.SelectedItem is string) { previewOffset = 0; await RefreshPreview(); } };
         var shell = new Grid { ColumnDefinitions = new ColumnDefinitions("190,*") };
         var frame = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto") }; Grid.SetColumn(frame, 1); shell.Children.Add(frame);
@@ -106,14 +106,44 @@ public sealed partial class MainWindow : Window
         AutomationProperties.SetName(appMark, "Logotipo de AiOPDF"); brand.Children.Add(appMark); brand.Children.Add(Label("AiOPDF", 25, true));
         homeButton.Click += (_, _) => { if (cancellation == null) ShowHome(); }; brand.Children.Add(homeButton); saveShortcut.Click += async (_, _) => await Execute(); brand.Children.Add(saveShortcut); header.Children.Add(brand);
         SizeChanged += (_, _) => { saveShortcut.IsVisible = !showingHome && Bounds.Width < 1150; homeButton.IsVisible = !showingHome && Bounds.Width < 1000; };
-        var badge = Panel(Label("✓  Solo en tu equipo", 13, true), 10); badge.Background = Brush.Parse("#FFF0C3"); badge.BorderThickness = new Thickness(0); Grid.SetColumn(badge, 1); header.Children.Add(badge);
+        var language = new ComboBox { ItemsSource = L10n.Languages, SelectedItem = L10n.Languages.First(p => p.Code == L10n.Code), MinWidth = 116, MaxWidth = 160, VerticalAlignment = VerticalAlignment.Center };
+        language.ItemTemplate = new FuncDataTemplate<LanguagePack>((pack, _) => Label(pack?.Name ?? "", localize: false));
+        LocalizedUI.Bind(language, AutomationProperties.NameProperty, "common.language");
+        LocalizedUI.Bind(language, ToolTip.TipProperty, "common.language");
+        var changingLanguage = false;
+        language.SelectionChanged += (_, _) =>
+        {
+            if (changingLanguage || language.SelectedItem is not LanguagePack pack) return;
+            if (!L10n.SetLanguage(pack.Code))
+            {
+                changingLanguage = true; language.SelectedItem = L10n.Languages.First(p => p.Code == L10n.Code); changingLanguage = false;
+                LocalizedUI.Bind(status, TextBlock.TextProperty, "settings.saveError");
+            }
+        };
+        void RefreshLanguage()
+        {
+            changingLanguage = true; language.SelectedItem = L10n.Languages.First(p => p.Code == L10n.Code); changingLanguage = false;
+            if (showingHome) ShowHome();
+        }
+        L10n.Changed += RefreshLanguage;
+        Closed += (_, _) => L10n.Changed -= RefreshLanguage;
+        var headerActions = Row(); headerActions.Children.Add(language); Grid.SetColumn(headerActions, 1); header.Children.Add(headerActions);
+        var badge = Panel(Label("✓  Solo en tu equipo", 13, true), 10); badge.Background = Brush.Parse("#FFF0C3"); badge.BorderThickness = new Thickness(0); headerActions.Children.Add(badge);
+        SizeChanged += (_, _) =>
+        {
+            var stacked = Bounds.Width < 760;
+            header.ColumnDefinitions = new ColumnDefinitions(stacked ? "*" : "*,Auto");
+            header.RowDefinitions = new RowDefinitions(stacked ? "Auto,10,Auto" : "Auto");
+            Grid.SetColumn(headerActions, stacked ? 0 : 1); Grid.SetRow(headerActions, stacked ? 2 : 0);
+            headerActions.HorizontalAlignment = stacked ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+        };
         SizeChanged += (_, _) => badge.IsVisible = Bounds.Width >= 860;
         frame.Children.Add(header); Grid.SetRow(body, 1); frame.Children.Add(body);
         var version = (Attribute.GetCustomAttribute(typeof(App).Assembly, typeof(System.Reflection.AssemblyInformationalVersionAttribute)) as System.Reflection.AssemblyInformationalVersionAttribute)?.InformationalVersion.Split('+')[0] ?? typeof(App).Assembly.GetName().Version?.ToString(3) ?? "";
         var bottom = Label($"Hecho para tus documentos. Sin subirlos a ningún sitio.   ·   AiOPDF {version}", 12); bottom.Foreground = Muted; bottom.Margin = new Thickness(32, 12); Grid.SetRow(bottom, 2); frame.Children.Add(bottom); Content = shell;
         KeyDown += (_, e) => { if (cancellation != null) return; if (e.Key == Key.F && e.KeyModifiers.HasFlag(KeyModifiers.Control)) { ShowHome(); Avalonia.Threading.Dispatcher.UIThread.Post(() => { homeSearch?.Focus(); homeSearch?.SelectAll(); }, Avalonia.Threading.DispatcherPriority.Loaded); e.Handled = true; } else if (e.Key == Key.Escape && !showingHome) { ShowHome(); e.Handled = true; } };
         execute.Click += async (_, _) => await Execute(); cancel.Click += (_, _) => cancellation?.Cancel(); reveal.Click += (_, _) => { if (lastOutput != null) OpenFolder(lastOutput); };
-        exportComparison.Click += async (_, _) => { if (comparisonResult == null || cancellation != null) return; var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "Guardar informe de comparación", AllowMultiple = false }); var parent = folders.FirstOrDefault()?.TryGetLocalPath(); if (parent != null) await SaveToPath(Path.Combine(parent, $"AiOPDF-Compare-{DateTime.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}")); };
+        exportComparison.Click += async (_, _) => { if (comparisonResult == null || cancellation != null) return; var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = L10n.Translate("Guardar informe de comparación"), AllowMultiple = false }); var parent = folders.FirstOrDefault()?.TryGetLocalPath(); if (parent != null) await SaveToPath(Path.Combine(parent, $"AiOPDF-Compare-{DateTime.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}")); };
         files.CollectionChanged += (_, _) => InvalidateComparison();
         void RefreshAction() { execute.IsEnabled = cancellation == null && CanRun; saveShortcut.IsEnabled = execute.IsEnabled; }
         pages.TextChanged += (_, _) => RefreshAction(); text.TextChanged += (_, _) => RefreshAction(); newPassword.TextChanged += (_, _) => RefreshAction();
@@ -134,7 +164,12 @@ public sealed partial class MainWindow : Window
         ShowHome();
     }
 
-    static TextBlock Label(string value, double size = 14, bool bold = false) => new() { Text = value, FontSize = size, LineHeight = size * (size >= 24 ? 1.2 : 1.5), FontWeight = bold ? FontWeight.Bold : FontWeight.Normal, TextWrapping = TextWrapping.Wrap, Foreground = Ink };
+    static TextBlock Label(string value, double size = 14, bool bold = false, bool localize = true)
+    {
+        var label = new TextBlock(); label.SetValue(LocalizedUI.EnabledProperty, localize);
+        label.Text = value; label.FontSize = size; label.LineHeight = size * (size >= 24 ? 1.2 : 1.5); label.FontWeight = bold ? FontWeight.Bold : FontWeight.Normal; label.TextWrapping = TextWrapping.Wrap; label.Foreground = Ink;
+        return label;
+    }
     static Button Primary(string value) => new() { Content = value, Background = Teal, Foreground = Brushes.White, Padding = new Thickness(22, 13), CornerRadius = new CornerRadius(10) };
     static Button Secondary(string value) => new() { Content = value, Padding = new Thickness(14, 10), CornerRadius = new CornerRadius(12), Background = Brushes.White, Foreground = Ink, BorderBrush = Brush.Parse("#C9C1D6"), BorderThickness = new Thickness(1) };
     static StackPanel Row() => new() { Orientation = Orientation.Horizontal, Spacing = 10 };
@@ -165,7 +200,7 @@ public sealed partial class MainWindow : Window
         void RenderCards()
         {
             cards.Children.Clear();
-            foreach (var item in ToolCatalog.All.Where(t => (category == "Todas" || t.Category == category) && ($"{t.Title} {t.Description}".Contains(search.Text ?? "", StringComparison.CurrentCultureIgnoreCase))))
+            foreach (var item in ToolCatalog.All.Where(t => (category == "Todas" || t.Category == category) && ($"{L10n.Translate(t.Title)} {L10n.Translate(t.Description)}".Contains(search.Text ?? "", StringComparison.CurrentCultureIgnoreCase))))
             {
                 var stack = new StackPanel { Spacing = 12 };
                 var top = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
@@ -310,7 +345,7 @@ public sealed partial class MainWindow : Window
     async Task AddFiles()
     {
         var images = tool.Kind == ToolKind.Images;
-        var selected = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions { AllowMultiple = tool.Multiple, Title = images ? "Seleccionar imágenes" : "Seleccionar PDFs", FileTypeFilter = [new FilePickerFileType(images ? "Imágenes" : "PDF") { Patterns = images ? ["*.jpg", "*.jpeg", "*.png", "*.webp"] : ["*.pdf"] }] });
+        var selected = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions { AllowMultiple = tool.Multiple, Title = L10n.Translate(images ? "Seleccionar imágenes" : "Seleccionar PDFs"), FileTypeFilter = [new FilePickerFileType(L10n.Translate(images ? "Imágenes" : "PDF")) { Patterns = images ? ["*.jpg", "*.jpeg", "*.png", "*.webp"] : ["*.pdf"] }] });
         await AddPaths(selected.Select(f => f.TryGetLocalPath()).OfType<string>());
     }
     public async Task AddPaths(IEnumerable<string> paths)
@@ -407,9 +442,9 @@ public sealed partial class MainWindow : Window
                         var value = removed ? change.Removed : change.Added;
                         var excerpt = value.Length > 5000 ? value[..5000] + "… (el informe contiene el fragmento completo)" : value;
                         var copy = new StackPanel { Spacing = 6, Children = { Label(removed ? "Original · eliminado" : "Actualizado · añadido", 13, true) } };
-                        if (change.Before.Length > 0) { var context = Label("… " + change.Before, 12); context.Foreground = Muted; copy.Children.Add(context); }
-                        copy.Children.Add(Label(value.Length == 0 ? "(sin este fragmento)" : excerpt, 15, true));
-                        if (change.After.Length > 0) { var context = Label(change.After + " …", 12); context.Foreground = Muted; copy.Children.Add(context); }
+                        if (change.Before.Length > 0) { var context = Label("… " + change.Before, 12, localize: false); context.Foreground = Muted; copy.Children.Add(context); }
+                        copy.Children.Add(Label(value.Length == 0 ? "(sin este fragmento)" : excerpt, 15, true, localize: value.Length == 0));
+                        if (change.After.Length > 0) { var context = Label(change.After + " …", 12, localize: false); context.Foreground = Muted; copy.Children.Add(context); }
                         var block = new Border { Padding = new Thickness(14), CornerRadius = new CornerRadius(12), Background = Brush.Parse(removed ? "#FCE8F0" : "#E7F5EF"), Child = copy }; Grid.SetColumn(block, removed ? 0 : 2); pair.Children.Add(block);
                     }
                     details.Children.Add(pair);

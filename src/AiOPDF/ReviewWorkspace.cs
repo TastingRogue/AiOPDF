@@ -129,7 +129,7 @@ public sealed partial class MainWindow
             {
                 var content = removed ? change.Hunk.Removed : change.Hunk.Added;
                 var shown = content.Length > 1500 ? content[..1500] + "… (fragmento completo en el informe)" : content;
-                var card = Panel(new StackPanel { Spacing = 6, Children = { Label(removed ? "Original · eliminado" : "Actualizado · añadido", 13, true), Label(content.Length == 0 ? "Sin este fragmento" : shown, 15, true) } }, 14);
+                var card = Panel(new StackPanel { Spacing = 6, Children = { Label(removed ? "Original · eliminado" : "Actualizado · añadido", 13, true), Label(content.Length == 0 ? "Sin este fragmento" : shown, 15, true, localize: content.Length == 0) } }, 14);
                 card.Background = Brush.Parse(removed ? "#FCE8F0" : "#E7F5EF"); Grid.SetColumn(card, removed ? 0 : 2); fragments.Children.Add(card);
             }
             await ShowPage(change.Page);

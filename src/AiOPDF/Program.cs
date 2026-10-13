@@ -16,6 +16,8 @@ public sealed class App : Application
 {
     public override void Initialize()
     {
+        L10n.Initialize();
+        LocalizedUI.Install();
         Styles.Add(new FluentTheme());
         Styles.Add(new StyleInclude(new Uri("avares://AiOPDF/")) { Source = new Uri("avares://AiOPDF/StudioTheme.axaml") });
         RequestedThemeVariant = ThemeVariant.Light;

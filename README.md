@@ -1,10 +1,10 @@
-# AiOPDF 1.0.0-rc.1
+﻿# AiOPDF 1.0.0-rc.2
 
-Aplicación de escritorio en español para procesar PDF localmente. C#/.NET 10 y Avalonia, sin servidor HTTP, navegador ni localhost. El usuario instala una aplicación; las bibliotecas nativas y modelos OCR vienen incluidos.
+Aplicación de escritorio en español e inglés para procesar PDF localmente. C#/.NET 10 y Avalonia, sin servidor HTTP, navegador ni localhost. El usuario instala una aplicación; las bibliotecas nativas y modelos OCR vienen incluidos.
 
 ## Descargar y probar
 
-Instalador candidato Windows x64: `artifacts/installers/AiOPDF-1.0.0-rc.1-windows-x64-setup.exe`. Instalación por usuario sin exigir SDK ni permisos de administrador. También se puede abrir `artifacts/windows-x64-1.0.0-rc.1/AiOPDF.exe` directamente. Esta candidata aún no es la versión estable: ver docs/PROGRESS-1.0-RC1.md y docs/RELEASE-CHECKLIST.md.
+Instalador candidato Windows x64: `artifacts/installers/AiOPDF-1.0.0-rc.2-windows-x64-setup.exe`. Instalación por usuario sin exigir SDK ni permisos de administrador. También se puede abrir `artifacts/windows-x64-1.0.0-rc.2/AiOPDF.exe` directamente. Esta candidata aún no es la versión estable: ver docs/PROGRESS-1.0-RC1.md y docs/RELEASE-CHECKLIST.md.
 
 ## Funciones implementadas
 
@@ -77,3 +77,7 @@ Estado para lanzamiento: [auditoría de versión 1.0](docs/AUDIT-1.0.md).
 
 El código de AiOPDF se distribuye bajo MIT (LICENSE). Las bibliotecas, modelos y recursos conservan sus licencias respectivas; ver los avisos incluidos.
 
+
+## Idiomas
+
+Selector de español e inglés en la cabecera, con cambio inmediato y preferencia local persistente. Los idiomas son módulos JSON; se pueden incorporar más sin cambiar el motor. Guía, formato y comprobaciones en [docs/LOCALIZATION.md](docs/LOCALIZATION.md).

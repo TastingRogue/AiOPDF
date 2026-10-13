@@ -1,4 +1,4 @@
-name: Validate release candidate
+﻿name: Validate release candidate
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
@@ -24,7 +24,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force artifacts | Out-Null
-          foreach ($mode in @('general','comparison','audit','readiness','corpus','stability','improvements','ui')) {
+          foreach ($mode in @('general','comparison','audit','readiness','corpus','stability','improvements','ui','localization','improvements-en')) {
             if ($mode -eq 'general') { dotnet run --no-build --project tests/AiOPDF.Checks -c Release *> "artifacts/ci-$mode.log" }
             else { dotnet run --no-build --project tests/AiOPDF.Checks -c Release -- "--$mode" *> "artifacts/ci-$mode.log" }
             if ($LASTEXITCODE -ne 0) { Get-Content "artifacts/ci-$mode.log" -Tail 40; exit $LASTEXITCODE }

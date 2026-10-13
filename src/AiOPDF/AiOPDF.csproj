@@ -21,6 +21,7 @@
   <ItemGroup><AvaloniaResource Include="Assets/**" /></ItemGroup>
   <ItemGroup><AvaloniaResource Include="StudioTheme.axaml" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="Assets/Lato-Regular.ttf" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="Localization/*.json" /></ItemGroup>
 </Project>
 
 

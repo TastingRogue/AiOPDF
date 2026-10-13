@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
@@ -18,11 +18,11 @@ public sealed record ContentComparisonResult(string Original, string Updated, Pa
     public string Summary { get { var changed = Pages.Count(p => p.State == "changed"); var pending = Pages.Count(p => p.State == "unreadable"); return $"{changed} {(changed == 1 ? "página con cambios" : "páginas con cambios")} · {Pages.Count(p => p.State == "equal")} sin cambios · {pending} {(pending == 1 ? "pendiente" : "pendientes")} de OCR"; } }
     public string Report()
     {
-        var report = new StringBuilder($"Comparación de texto\nOriginal: {Original}\nVersión actualizada: {Updated}\n{Summary}\n\nCompara palabras por página. Ignora espacios y saltos de línea. No compara imágenes, gráficos ni el significado del texto. Las páginas sin texto extraíble requieren OCR; no se declaran iguales.\n");
+        var report = new StringBuilder(L10n.Format("comparison.reportHeader", Original, Updated, L10n.Translate(Summary)));
         foreach (var page in Pages)
         {
-            report.AppendLine($"\nPágina {page.Page}: " + (page.State == "equal" ? "Sin cambios en el texto" : page.State == "unreadable" ? "Sin texto legible: aplicar OCR antes de comparar" : "Texto modificado"));
-            foreach (var change in ContentComparison.Hunks(page.Changes)) { report.AppendLine($"Contexto: … {change.Before} [cambio] {change.After} …"); if (change.Removed.Length > 0) report.AppendLine("Eliminado: " + change.Removed); if (change.Added.Length > 0) report.AppendLine("Añadido: " + change.Added); }
+            report.AppendLine(L10n.Format("comparison.reportPage", page.Page, L10n.Translate(page.State == "equal" ? "Sin cambios en el texto" : page.State == "unreadable" ? "Sin texto legible: aplicar OCR antes de comparar" : "Texto modificado")));
+            foreach (var change in ContentComparison.Hunks(page.Changes)) { report.AppendLine(L10n.Format("comparison.reportContext", change.Before, change.After)); if (change.Removed.Length > 0) report.AppendLine(L10n.Text("comparison.reportRemoved") + change.Removed); if (change.Added.Length > 0) report.AppendLine(L10n.Text("comparison.reportAdded") + change.Added); }
         }
         return report.ToString();
     }

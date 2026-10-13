@@ -1,4 +1,4 @@
-using AiOPDF;
+﻿using AiOPDF;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -21,10 +21,11 @@ static class ImprovementChecks
         while (!task.IsCompleted && timer.Elapsed.TotalSeconds < 90) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(10); }
         task.GetAwaiter().GetResult(); Dispatcher.UIThread.RunJobs();
     }
-    public static void Run()
+    public static void Run(string language = "es")
     {
         AppFontResolver.Initialize(); var root = Path.GetFullPath("artifacts/improvement-checks"); Directory.CreateDirectory(root);
         var work = Path.Combine(root, "run-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(work);
+        L10n.Initialize(Path.Combine(work, "settings.json")); L10n.SetLanguage(language);
         var samples = SampleDocuments.Create(); var bytes = File.ReadAllBytes(samples[0]);
         PdfTool Tool(ToolKind kind) => ToolCatalog.All.Single(t => t.Kind == kind);
         string Text(string path, int page) { using var pdf = UglyToad.PdfPig.PdfDocument.Open(path); return pdf.GetPage(page).Text; }
@@ -54,12 +55,12 @@ static class ImprovementChecks
         using (var pdf = PdfEngine.Open(imagePdf)) Check(Math.Abs(pdf.Pages[0].Width.Point - 841.89) < .01 && Math.Abs(pdf.Pages[0].Height.Point - 595.276) < .01, "image paper and orientation change actual PDF geometry");
         AppBuilder.Configure<App>().UseSkia().UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
         var window = new MainWindow(); window.Show(); Dispatcher.UIThread.RunJobs();
-        T Field<T>(string name) where T : Control => window.GetLogicalDescendants().OfType<T>().Single(c => AutomationProperties.GetName(c) == name);
+        T Field<T>(string name) where T : Control => window.GetLogicalDescendants().OfType<T>().Single(c => AutomationProperties.GetName(c) == L10n.Translate(name));
         foreach (var kind in Enum.GetValues<ToolKind>().Where(k => k != ToolKind.Compare))
         {
             window.SelectTool(Tool(kind));
             var inputList = window.GetLogicalDescendants().OfType<ListBox>().Single();
-            while (inputList.ItemCount > 0) { inputList.SelectedIndex = 0; window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == "Quitar").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Dispatcher.UIThread.RunJobs(); }
+            while (inputList.ItemCount > 0) { inputList.SelectedIndex = 0; window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == L10n.Translate("Quitar")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Dispatcher.UIThread.RunJobs(); }
             var input = kind == ToolKind.Images ? png : samples[0];
             if (kind == ToolKind.Unlock) { input = Path.Combine(work, "protected.pdf"); PdfEngine.Run(new PdfJob(Tool(ToolKind.Protect), [samples[0]], input, NewPassword: "Sample-123456"), default); }
             Await(window.AddPaths(kind == ToolKind.Merge ? samples : [input]));
@@ -72,8 +73,9 @@ static class ImprovementChecks
             var prepare = window.PrepareResult(); Await(prepare); Check(prepare.Result, "prepare and review " + kind);
             var destination = Path.Combine(work, "reviewed-" + kind + (Tool(kind).Folder ? "" : kind is ToolKind.Text or ToolKind.OcrText ? ".txt" : kind == ToolKind.Word ? ".docx" : kind == ToolKind.Excel ? ".xlsx" : kind == ToolKind.Slides ? ".pptx" : ".pdf"));
             Check(!File.Exists(destination) && !Directory.Exists(destination), "prepare does not save to final destination " + kind);
-            var savedCopy = window.SavePreparedToPathAsync(destination); Await(savedCopy); Check(savedCopy.Result, "save reviewed copy " + kind);
-            if (kind == ToolKind.Split) { window.Width = 1440; window.Height = 1120; Dispatcher.UIThread.RunJobs(); using var frame = window.CaptureRenderedFrame(); frame!.Save("docs/screenshots/reviewed-split.png", PngBitmapEncoderOptions.Default); }
+            var savedCopy = window.SavePreparedToPathAsync(destination); Await(savedCopy); if (!savedCopy.Result) throw new Exception("save reviewed copy " + kind + " · " + string.Join(" | ", window.GetLogicalDescendants().OfType<TextBlock>().Select(t => t.Text)));
+            Check(savedCopy.Result, "save reviewed copy " + kind);
+            if (kind == ToolKind.Split) { window.Width = 1440; window.Height = 1120; Dispatcher.UIThread.RunJobs(); using var frame = window.CaptureRenderedFrame(); frame!.Save(work + "/reviewed-split.png", PngBitmapEncoderOptions.Default); }
             Check(!window.SavePreparedToPath(destination), "review save rejects overwrite " + kind);
         }
         window.SelectTool(Tool(ToolKind.Split)); Await(window.AddPaths([merged])); Field<ComboBox>("Cómo dividir").SelectedIndex = 1; Field<TextBox>("Páginas").Text = "1-2,3-6";
@@ -81,15 +83,15 @@ static class ImprovementChecks
         Check(mode.GetVisualDescendants().OfType<Avalonia.Controls.Primitives.Popup>().Single().IsOpen, "custom selector opens its options"); mode.IsDropDownOpen = false;
         var ranges = window.PrepareResult(); Await(ranges); Check(ranges.Result, "UI range preparation");
         var rangeDest = Path.Combine(work, "ui-ranges"); Check(window.SavePreparedToPath(rangeDest) && Directory.GetFiles(rangeDest).Length == 2, "UI ranges save two reviewed files");
-        window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == "Usar este PDF en otra herramienta").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == L10n.Translate("Usar este PDF en otra herramienta")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         for (var i = 0; i < 60; i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(20); }
         var reused = window.GetLogicalDescendants().OfType<ListBox>().Single().Items.Cast<string>().Single();
         Check(PdfEngine.PageCount(reused) == 2 && reused.Contains("AiOPDF-review-"), "continue uses selected result rather than original");
         var reusedRoot = Path.GetDirectoryName(Path.GetDirectoryName(reused))!;
         window.SelectTool(Tool(ToolKind.Compare)); Await(window.AddPaths(samples)); var compare = window.CompareDocuments(); Await(compare); Check(compare.Result, "parallel comparison reader");
-        var change = window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == "Siguiente cambio"); change.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        var change = window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == L10n.Translate("Siguiente cambio")); change.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         for (var i = 0; i < 30; i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(20); }
-        Check(window.GetLogicalDescendants().OfType<TextBlock>().Any(t => t.Text?.StartsWith("Cambio 1 de") == true), "change navigation selects first difference");
+        Check(window.GetLogicalDescendants().OfType<TextBlock>().Any(t => t.Text?.StartsWith(L10n.Code == "en" ? "Change 1 of" : "Cambio 1 de") == true), "change navigation selects first difference");
         var originalWidth = Field<Avalonia.Controls.Image>("Página del PDF original").Width;
         Field<NumericUpDown>("Zoom de comparación (%)").Value = 150; Dispatcher.UIThread.RunJobs();
         Check(Field<Avalonia.Controls.Image>("Página del PDF original").Width > originalWidth, "zoom enlarges actual page within scrollable viewer");
@@ -103,9 +105,9 @@ static class ImprovementChecks
                 var viewer = pageImage.GetVisualAncestors().OfType<ScrollViewer>().First();
                 Check(viewer.Extent.Width <= viewer.Viewport.Width + 1 && viewer.Extent.Height <= viewer.Viewport.Height + 1, $"complete comparison page fits at 100% {name} {size.Item1}");
             }
-            using var fullPageFrame = window.CaptureRenderedFrame(); fullPageFrame!.Save($"docs/screenshots/comparison-full-page-{size.Item1}.png", PngBitmapEncoderOptions.Default);
+            using var fullPageFrame = window.CaptureRenderedFrame(); fullPageFrame!.Save($"{work}/comparison-full-page-{size.Item1}.png", PngBitmapEncoderOptions.Default);
         }
-        window.Width = 1440; window.Height = 1120; Dispatcher.UIThread.RunJobs(); using (var frame = window.CaptureRenderedFrame()) frame!.Save("docs/screenshots/comparison-reader.png", PngBitmapEncoderOptions.Default);
+        window.Width = 1440; window.Height = 1120; Dispatcher.UIThread.RunJobs(); using (var frame = window.CaptureRenderedFrame()) frame!.Save(work + "/comparison-reader.png", PngBitmapEncoderOptions.Default);
         window.SelectTool(Tool(ToolKind.Crop)); Await(window.AddPaths(samples.Take(1))); Field<NumericUpDown>("Ancho (%)").Value = 70; Field<NumericUpDown>("Alto (%)").Value = 60;
         Dispatcher.UIThread.RunJobs();
         var editor = window.GetVisualDescendants().OfType<RegionEditor>().Single();
@@ -114,12 +116,13 @@ static class ImprovementChecks
         var to = editor.TranslatePoint(new Point(editor.Bounds.Width / 2 + 70, 220), window)!.Value;
         window.MouseMove(from); window.MouseDown(from, MouseButton.Left); window.MouseMove(to); window.MouseUp(to, MouseButton.Left); Dispatcher.UIThread.RunJobs();
         Check(editor.Selection != initial && Math.Abs((double)Field<NumericUpDown>("Ancho (%)").Value! - editor.Selection.Width) < .01, "pointer drag updates actual region values");
-        window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == "Deshacer región").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        window.GetLogicalDescendants().OfType<Button>().Single(b => b.Content as string == L10n.Translate("Deshacer región")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Check(editor.Selection == initial, "undo restores drawn region");
-        Dispatcher.UIThread.RunJobs(); using (var frame = window.CaptureRenderedFrame()) frame!.Save("docs/screenshots/visual-crop.png", PngBitmapEncoderOptions.Default);
+        Dispatcher.UIThread.RunJobs(); using (var frame = window.CaptureRenderedFrame()) frame!.Save(work + "/visual-crop.png", PngBitmapEncoderOptions.Default);
         window.Close(); Check(File.ReadAllBytes(samples[0]).SequenceEqual(bytes), "new workflows preserve original bytes");
         Check(!Directory.Exists(reusedRoot), "closing cleans owned review temporaries");
         Check(!Directory.EnumerateFileSystemEntries(work, ".aiopdf-*").Any(), "reviewed save cleans staging files");
         Console.WriteLine("Evidence: " + work);
     }
 }
+

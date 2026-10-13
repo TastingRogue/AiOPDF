@@ -1,4 +1,14 @@
-# Changelog
+﻿# Changelog
+
+## 1.0.0-rc.2
+
+- Selector de español e inglés con cambio inmediato, sin perder ajustes, y preferencia local persistente.
+- Catálogos JSON modulares con fallback y validación de placeholders; admite idiomas adicionales externos.
+- Búsqueda, textos dinámicos, accesibilidad, selectores nativos e informe TXT traducidos.
+- Cabecera adaptable y regresiones de las 25 herramientas en ambos idiomas.
+- Los valores internos, nombres de archivo y fragmentos de documentos se conservan.
+
+Continúan pendientes los requisitos de aceptación nativa y firma de la versión estable.
 
 ## 1.0.0-rc.1
 

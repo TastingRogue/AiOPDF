@@ -1,6 +1,7 @@
-using AiOPDF;
+﻿using AiOPDF;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
+if (args.Contains("--localization")) { LocalizationChecks.Run(); return; }
 if (args.Length > 1 && args[0] == "--readiness-child")
 {
     using var session = new PrivateReviewSession(args[1]);
@@ -29,6 +30,7 @@ if (args.Contains("--assets")) { AssetChecks.Run(); return; }
 if (args.Contains("--comparison")) { ComparisonChecks.Run(); return; }
 if (args.Contains("--audit")) { BehaviorAuditChecks.Run(); return; }
 if (args.Contains("--reference-study")) { ReferenceStudy.Run(); return; }
+if (args.Contains("--improvements-en")) { ImprovementChecks.Run("en"); return; }
 if (args.Contains("--improvements")) { ImprovementChecks.Run(); return; }
 if (args.Contains("--readiness")) { ReleaseReadinessChecks.Run(); return; }
 if (args.Contains("--stability")) { StabilityChecks.Run(); return; }

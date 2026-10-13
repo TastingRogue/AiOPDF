@@ -1,4 +1,4 @@
-using Avalonia.Automation;
+﻿using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -97,7 +97,7 @@ public sealed partial class MainWindow
                 {
                     var bitmap = new Bitmap(chosen); previewImages.Add(bitmap); display.Children.Add(new Image { Source = bitmap, Height = 400, Stretch = Stretch.Uniform });
                 }
-                else if (Path.GetExtension(chosen) == ".txt") display.Children.Add(Label(File.ReadAllText(chosen) is var value && value.Length > 6000 ? value[..6000] + "…" : value, 14));
+                else if (Path.GetExtension(chosen) == ".txt") display.Children.Add(Label(File.ReadAllText(chosen) is var value && value.Length > 6000 ? value[..6000] + "…" : value, 14, localize: false));
                 else display.Children.Add(Label("Guarda la copia y ábrela en tu aplicación de Office para revisar el contenido editable.", 13));
             }
             catch (Exception error) { if (owner == resultRequest) display.Children.Add(Label("No se pudo mostrar la vista previa: " + error.Message + " Puedes guardar la copia y revisarla en otra aplicación.", 13)); }
@@ -113,14 +113,14 @@ public sealed partial class MainWindow
         string? destination;
         if (Directory.Exists(preparedOutput))
         {
-            var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "Guardar copia de los resultados", AllowMultiple = false });
+            var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = L10n.Translate("Guardar copia de los resultados"), AllowMultiple = false });
             var parent = folders.FirstOrDefault()?.TryGetLocalPath();
             destination = parent == null ? null : Path.Combine(parent, $"AiOPDF-{tool.Kind}-{DateTime.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid().ToString("N")[..4]}");
         }
         else
         {
             var extension = Path.GetExtension(preparedOutput).TrimStart('.');
-            var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions { Title = "Guardar copia revisada", SuggestedFileName = Path.GetFileName(preparedOutput), DefaultExtension = extension, FileTypeChoices = [new FilePickerFileType(extension.ToUpperInvariant()) { Patterns = [$"*.{extension}"] }] });
+            var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions { Title = L10n.Translate("Guardar copia revisada"), SuggestedFileName = Path.GetFileName(preparedOutput), DefaultExtension = extension, FileTypeChoices = [new FilePickerFileType(extension.ToUpperInvariant()) { Patterns = [$"*.{extension}"] }] });
             destination = file?.TryGetLocalPath();
         }
         if (destination != null) await SavePreparedToPathAsync(destination);
