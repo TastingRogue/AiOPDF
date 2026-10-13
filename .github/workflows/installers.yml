@@ -55,6 +55,7 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: |
+          bash -n scripts/sign-macos-ci.sh scripts/package-macos.sh
           bash scripts/package-macos.sh arm64
           bash scripts/test-package-macos.sh
       - name: Package hashes

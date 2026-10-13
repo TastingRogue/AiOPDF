@@ -36,7 +36,7 @@ The workflow intentionally builds unsigned/ad-hoc candidates until signing crede
 
 ## Stable release gate
 
-Before tagging `v1.0.0`, complete `RELEASE-CHECKLIST.md`, including native human acceptance and signing. Require validation and installer jobs to pass for the exact release commit. Download the resulting packages, independently verify hashes and signatures, record acceptance evidence, and publish a release with those exact packages. Never relabel an old candidate installer as stable or silently replace existing release assets.
+Before tagging `v1.0.0`, complete the functional acceptance requirements in `RELEASE-CHECKLIST.md`, including native human acceptance. Trusted signing/notarization are optional distribution improvements; an unsigned stable release must clearly disclose its signing status. Require validation and installer jobs to pass for the exact release commit. Download the resulting packages, independently verify hashes and signatures, record acceptance evidence, and publish a release with those exact packages. Never relabel an old candidate installer as stable or silently replace existing release assets.
 
 ## Reproducible candidate publication
 
@@ -45,3 +45,5 @@ After both workflows pass for the same commit, run `pwsh scripts/release-candida
 ## RC3 evidence
 
 Release source commit: `427fb8b`. All three installer jobs passed: [native installation workflow](https://github.com/TastingRogue/AiOPDF/actions/runs/38428372557). All three engine/interface regression jobs passed for the same commit: [validation workflow](https://github.com/TastingRogue/AiOPDF/actions/runs/38428372534). The release preserves SHA256SUMS and installation-evidence.zip so installation evidence does not depend solely on Actions retention. Windows is unsigned and macOS uses an ad-hoc signature; trusted signing/notarization and human acceptance remain pending.
+
+Signing enrollment, public policy, configured environment and prepared manual workflows are tracked in [SIGNING-SETUP.md](SIGNING-SETUP.md). The existing installer workflow continues to produce unsigned/ad-hoc packages; signed outputs use separate artifacts and require explicit owner approval.

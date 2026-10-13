@@ -8,6 +8,7 @@
 | [Roadmap](../ROADMAP.md) | Priorities and scope for stable 1.0 |
 | [Release checklist](RELEASE-CHECKLIST.md) | Native acceptance, signatures and remaining release gates |
 | [Installers](INSTALLERS.md) | Native package construction, lifecycle evidence and signing prerequisites |
+| [Code signing policy](CODE-SIGNING-POLICY.md) / [Signing enrollment](SIGNING-SETUP.md) | Maintainer roles, provider application and signing workflows |
 | [Security](../.github/SECURITY.md) | Private vulnerability reports |
 
 ## Validation and implementation history

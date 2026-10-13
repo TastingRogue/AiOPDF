@@ -1,0 +1,144 @@
+name: Sign Windows with SignPath
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  sign:
+    if: github.ref == 'refs/heads/main'
+    environment: code-signing
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Check signing configuration
+        shell: pwsh
+        env:
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+          ORGANIZATION: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          PROJECT: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          POLICY: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          APP_CONFIGURATION: ${{ vars.SIGNPATH_APP_CONFIGURATION }}
+          INSTALLER_CONFIGURATION: ${{ vars.SIGNPATH_INSTALLER_CONFIGURATION }}
+        run: |
+          foreach ($name in @('SIGNPATH_API_TOKEN','ORGANIZATION','PROJECT','POLICY','APP_CONFIGURATION','INSTALLER_CONFIGURATION')) {
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) { throw "Missing signing configuration: $name" }
+          }
+      - name: Build and validate source
+        shell: pwsh
+        run: |
+          dotnet restore tests/AiOPDF.Checks --locked-mode
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          dotnet build tests/AiOPDF.Checks -c Release --no-restore -warnaserror
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          foreach ($mode in @('general','comparison','audit','readiness','corpus','stability','improvements','ui','localization','improvements-en')) {
+            if ($mode -eq 'general') { dotnet run --no-build --project tests/AiOPDF.Checks -c Release }
+            else { dotnet run --no-build --project tests/AiOPDF.Checks -c Release -- "--$mode" }
+            if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          }
+      - name: Build app payload
+        id: app
+        shell: pwsh
+        run: |
+          ./scripts/publish.ps1 -Runtime win-x64
+          $version = (Get-Content VERSION -Raw).Trim()
+          $publish = Join-Path $PWD "artifacts/windows-x64-$version"
+          New-Item -ItemType Directory artifacts/unsigned-app | Out-Null
+          Copy-Item "$publish/AiOPDF.exe" artifacts/unsigned-app/AiOPDF.exe
+          $metadata = (Get-Item "$publish/AiOPDF.exe").VersionInfo
+          if ($metadata.ProductName -ne 'AiOPDF') { throw 'Unexpected product metadata' }
+          "version=$($metadata.ProductVersion)" >> $env:GITHUB_OUTPUT
+          "fileversion=$($metadata.FileVersion)" >> $env:GITHUB_OUTPUT
+          "publish=$publish" >> $env:GITHUB_OUTPUT
+      - name: Upload app for origin verification
+        id: unsigned-app
+        uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-app
+          path: artifacts/unsigned-app/AiOPDF.exe
+          if-no-files-found: error
+      - name: Request app signing (manual provider approval required)
+        uses: SignPath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_APP_CONFIGURATION }}
+          github-artifact-id: ${{ steps.unsigned-app.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 1800
+          output-artifact-directory: artifacts/signed-app
+          parameters: |
+            version: ${{ toJSON(steps.app.outputs.version) }}
+            file-version: ${{ toJSON(steps.app.outputs.fileversion) }}
+      - name: Verify app and compile installer
+        id: installer
+        shell: pwsh
+        env:
+          PUBLISH_DIRECTORY: ${{ steps.app.outputs.publish }}
+        run: |
+          ./scripts/accept-signed-windows-app.ps1 -SignedApp artifacts/signed-app/AiOPDF.exe -PublishDirectory $env:PUBLISH_DIRECTORY
+          choco install innosetup --no-progress -y
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          & 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe' "/DPublishDir=$env:PUBLISH_DIRECTORY" packaging/windows.iss
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $files = @(Get-ChildItem artifacts/installers -Filter '*-setup.exe')
+          if ($files.Count -ne 1) { throw 'Expected one installer' }
+          $file = $files[0]
+          "version=$($file.VersionInfo.ProductVersion)" >> $env:GITHUB_OUTPUT
+          "fileversion=$($file.VersionInfo.FileVersion)" >> $env:GITHUB_OUTPUT
+      - name: Upload installer for origin verification
+        id: unsigned-installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-installer
+          path: artifacts/installers/*-setup.exe
+          if-no-files-found: error
+      - name: Request installer signing (manual provider approval required)
+        uses: SignPath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_INSTALLER_CONFIGURATION }}
+          github-artifact-id: ${{ steps.unsigned-installer.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 1800
+          output-artifact-directory: artifacts/signed-installer
+          parameters: |
+            version: ${{ toJSON(steps.installer.outputs.version) }}
+            file-version: ${{ toJSON(steps.installer.outputs.fileversion) }}
+      - name: Verify signed installer and installed app
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem artifacts/signed-installer -Filter '*-setup.exe')
+          if ($files.Count -ne 1) { throw 'Expected one signed installer' }
+          $file = $files[0]
+          $signature = Get-AuthenticodeSignature $file.FullName
+          if ($signature.Status -ne 'Valid' -or !$signature.TimeStamperCertificate) { throw 'Invalid or untimestamped installer signature' }
+          $unsigned = Get-ChildItem artifacts/installers -Filter '*-setup.exe' | Select-Object -First 1
+          if ($file.VersionInfo.ProductName -ne 'AiOPDF' -or $file.VersionInfo.ProductVersion -ne $unsigned.VersionInfo.ProductVersion -or $file.VersionInfo.FileVersion -ne $unsigned.VersionInfo.FileVersion) { throw 'Signed installer metadata changed' }
+          Copy-Item $file.FullName artifacts/installers -Force
+          ./scripts/test-package-windows.ps1 -RequireSignature
+          $appSignature = Get-AuthenticodeSignature artifacts/signed-app/AiOPDF.exe
+          [ordered]@{ commit=$env:GITHUB_SHA; installerSigner=$signature.SignerCertificate.Subject; appSigner=$appSignature.SignerCertificate.Subject; installerSha256=(Get-FileHash $file.FullName -Algorithm SHA256).Hash } | ConvertTo-Json | Set-Content artifacts/signature-verification.json
+          Get-ChildItem artifacts/installers -File | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $($_.Name)" } | Set-Content artifacts/SHA256SUMS-signed-windows.txt
+      - name: Preserve signed packages and evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: signed-windows-x64
+          path: |
+            artifacts/installers/*
+            artifacts/signature-verification.json
+            artifacts/SHA256SUMS-signed-windows.txt
+            artifacts/package-check-*
+            artifacts/install-windows.log
+          if-no-files-found: error

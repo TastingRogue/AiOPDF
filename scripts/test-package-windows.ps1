@@ -1,4 +1,4 @@
-param()
+param([switch]$RequireSignature)
 $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path $PSScriptRoot -Parent
 $taskVersion = (Get-Content "$taskRoot/VERSION" -Raw).Trim()
@@ -12,6 +12,9 @@ Install-Candidate
 $taskExe = Join-Path $taskDestination 'AiOPDF.exe'
 $taskReport = "$taskRoot/artifacts/package-check-windows.json"
 function Check-Candidate {
+    if ($RequireSignature -and (Get-AuthenticodeSignature -LiteralPath $taskExe).Status -ne 'Valid') {
+        throw 'Installed app signature is not valid.'
+    }
     $taskCheck = Start-Process -FilePath $taskExe -ArgumentList @('--package-check',('"' + $taskReport + '"')) -Wait -PassThru -WindowStyle Hidden
     if ($taskCheck.ExitCode -ne 0 -or !(Test-Path $taskReport)) { throw 'Installed native engine check failed.' }
 }

@@ -19,6 +19,8 @@ AiOPDF reúne 25 herramientas PDF en un flujo sencillo: elige una herramienta, a
 
 **Para usarla:** [Capturas](#capturas) · [Funciones](#funciones) · [Instalación](#instalación) · [Privacidad](#privacidad-y-guardado) · [Límites](#límites-actuales)
 
+**[Code signing policy](docs/CODE-SIGNING-POLICY.md)** · [Signing setup / Alta de firmas](docs/SIGNING-SETUP.md) · [Privacy / Privacidad](docs/PRIVACY.md)
+
 **Para contribuir:** [Desarrollo](#desarrollo) · [Guía de contribución](CONTRIBUTING.md) · [Añadir idiomas](docs/LOCALIZATION.md) · [Roadmap](ROADMAP.md) · [Seguridad](.github/SECURITY.md)
 
 ## Capturas

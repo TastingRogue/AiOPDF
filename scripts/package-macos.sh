@@ -51,12 +51,21 @@ else
   codesign --force --options runtime --timestamp --entitlements "$root/packaging/macos.entitlements" --sign "$identity" "$app"
 fi
 codesign --verify --deep --strict --verbose=2 "$app"
+if [ "$identity" != '-' ]; then
+  codesign --display --verbose=4 "$app" 2> "$root/artifacts/macos-signature-verification.txt"
+  if [ -n "${APPLE_TEAM_ID:-}" ]; then
+    grep -Fx "TeamIdentifier=$APPLE_TEAM_ID" "$root/artifacts/macos-signature-verification.txt" >/dev/null || { echo 'Unexpected signing team'; exit 1; }
+  fi
+fi
 dmg="$root/artifacts/installers/AiOPDF-$version-macos-$arch.dmg"
 hdiutil create -volname AiOPDF -srcfolder "$stage/image" -ov -format UDZO "$dmg"
 if [ -n "${AIOPDF_NOTARY_PROFILE:-}" ]; then
   test "$identity" != '-' || { echo 'Notarization requires Developer ID'; exit 1; }
   codesign --force --timestamp --sign "$identity" "$dmg"
-  xcrun notarytool submit "$dmg" --keychain-profile "$AIOPDF_NOTARY_PROFILE" --wait
+  notary_args=(--keychain-profile "$AIOPDF_NOTARY_PROFILE")
+  if [ -n "${AIOPDF_NOTARY_KEYCHAIN:-}" ]; then notary_args+=(--keychain "$AIOPDF_NOTARY_KEYCHAIN"); fi
+  xcrun notarytool submit "$dmg" "${notary_args[@]}" --wait --output-format json > "$root/artifacts/notarization-result.json"
+  python3 -c 'import json,sys; assert json.load(open(sys.argv[1]))["status"] == "Accepted", "Notarization was not accepted"' "$root/artifacts/notarization-result.json"
   xcrun stapler staple "$dmg"
   xcrun stapler validate "$dmg"
   spctl --assess --type open --context context:primary-signature --verbose=2 "$dmg"

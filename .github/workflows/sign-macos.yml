@@ -1,0 +1,44 @@
+name: Sign and notarize macOS
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sign:
+    if: github.ref == 'refs/heads/main'
+    environment: code-signing
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Sign, notarize and test installer
+        shell: bash
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          AIOPDF_SIGN_IDENTITY: ${{ vars.APPLE_SIGN_IDENTITY }}
+        run: bash scripts/sign-macos-ci.sh
+      - name: Hash final notarized package
+        shell: bash
+        run: |
+          cd artifacts/installers
+          shasum -a 256 *.dmg > SHA256SUMS-signed-macos.txt
+      - name: Preserve notarized package and evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: notarized-macos-arm64
+          path: |
+            artifacts/installers/*
+            artifacts/notarization-result.json
+            artifacts/macos-signature-verification.txt
+            artifacts/package-check-*
+            artifacts/install-macos.log
+          if-no-files-found: error

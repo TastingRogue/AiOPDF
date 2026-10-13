@@ -1,0 +1,8 @@
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters><parameter name="version" required="true" /><parameter name="file-version" required="true" /></parameters>
+  <zip-file>
+    <pe-file path="AiOPDF.exe" product-name="AiOPDF" product-version="${version}" file-version="${file-version}" company-name="TastingRogue">
+      <authenticode-sign />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

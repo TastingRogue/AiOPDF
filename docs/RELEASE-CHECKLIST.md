@@ -1,6 +1,6 @@
 # Puerta de salida para 1.0 estable
 
-No cambiar VERSION a 1.0.0 hasta completar y guardar evidencia de los puntos abiertos.
+No cambiar VERSION a 1.0.0 hasta completar y guardar evidencia de los requisitos funcionales abiertos. Firma y notarización son mejoras opcionales de distribución; si se publica sin ellas, declarar explícitamente el estado de firma y advertencias de instalación.
 
 - [x] MIT elegida por el propietario y archivo LICENSE incluido.
 - [x] Fuente única VERSION y lockfiles.
@@ -12,8 +12,8 @@ No cambiar VERSION a 1.0.0 hasta completar y guardar evidencia de los puntos abi
 - [x] Workflow nativo del motor e interfaz pasó en Windows/macOS/Linux: https://github.com/TastingRogue/AiOPDF/actions/runs/38428372534 (commit 427fb8b, RC3).
 - [x] Instalación, motor/OCR instalado, arranque UI, reinstalación de la misma versión y retirada en runners nativos Windows x64, Ubuntu 24.04 amd64 y macOS 15 arm64: https://github.com/TastingRogue/AiOPDF/actions/runs/38428372557 (commit 427fb8b).
 - [ ] Aceptación humana en equipos limpios, incluidos actualización entre versiones y comportamiento al descargar paquetes sin firma/notarización. Reinstalar el mismo build no demuestra actualización.
-- [ ] Firmar EXE e instalador Windows con certificado del propietario.
-- [ ] Generar y firmar DMG; ejecutar notarización/stapling y validarlo en Mac.
+- [ ] Opcional: firma de confianza del EXE e instalador Windows mediante el proveedor aprobado.
+- [ ] Opcional: firma Developer ID del DMG y app, notarización/stapling y aceptación de Gatekeeper en Mac.
 - [ ] Ampliar corpus de aceptación con formularios, documentos firmados, escaneos variados, EXIF y datos autorizados.
 - [ ] Probar disco lleno, destino de red interrumpido, permisos y límites bajo carga real.
 - [ ] Probar teclado, lector de pantalla y escalado 125/150/200% en sistemas reales.

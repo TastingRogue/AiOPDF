@@ -1,6 +1,10 @@
 <Project>
   <PropertyGroup>
     <Version>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)VERSION').Trim())</Version>
+    <Product>AiOPDF</Product>
+    <Company>TastingRogue</Company>
+    <!-- App and installer product versions must match the signing policy. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RuntimeIdentifiers>win-x64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
     <NuGetAuditMode>all</NuGetAuditMode>

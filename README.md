@@ -20,6 +20,8 @@ AiOPDF combines 25 PDF tools with a simple workflow: choose a tool, add local fi
 
 **Using AiOPDF:** [Screenshots](#screenshots) · [Features](#features) · [Installation](#installation) · [Privacy](#privacy-and-saving) · [Limitations](#know-the-limits)
 
+**[Code signing policy](docs/CODE-SIGNING-POLICY.md)** · [Signing setup](docs/SIGNING-SETUP.md) · [Privacy policy](docs/PRIVACY.md)
+
 **Contributing:** [Development](#development) · [Contribution guide](CONTRIBUTING.md) · [Add a language](docs/LOCALIZATION.md) · [Roadmap](ROADMAP.md) · [Security](.github/SECURITY.md)
 
 ## Screenshots
