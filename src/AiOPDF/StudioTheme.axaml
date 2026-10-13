@@ -1,0 +1,138 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:conv="using:Avalonia.Data.Converters">
+  <!-- AiOPDF visual templates; Avalonia supplies input, keyboard and automation behavior. -->
+  <Styles.Resources>
+    <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
+      <Setter Property="MinHeight" Value="42"/><Setter Property="FontSize" Value="14"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="FocusAdorner" Value="{x:Null}"/>
+      <Setter Property="Template"><ControlTemplate>
+        <Panel>
+          <Border Name="Surface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}">
+            <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}" Padding="{TemplateBinding Padding}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+          </Border>
+          <Border Name="Focus" BorderBrush="#5A3FC0" BorderThickness="2" CornerRadius="{TemplateBinding CornerRadius}" Margin="-3" Opacity="0" IsHitTestVisible="False"/>
+        </Panel>
+      </ControlTemplate></Setter>
+      <Style Selector="^:pointerover /template/ Border#Surface"><Setter Property="BorderBrush" Value="#5A3FC0"/></Style>
+      <Style Selector="^:pressed /template/ Border#Surface"><Setter Property="Opacity" Value="0.8"/></Style>
+      <Style Selector="^:focus-visible /template/ Border#Focus"><Setter Property="Opacity" Value="1"/></Style>
+      <Style Selector="^:disabled"><Setter Property="Opacity" Value="0.45"/></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ToggleButton}" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type Button}}"/>
+    <ControlTheme x:Key="{x:Type RepeatButton}" TargetType="RepeatButton" BasedOn="{StaticResource {x:Type Button}}"/>
+    <ControlTheme x:Key="{x:Type TextBox}" TargetType="TextBox">
+      <Setter Property="Background" Value="#FFFFFF"/><Setter Property="Foreground" Value="#29243D"/>
+      <Setter Property="BorderBrush" Value="#8D869F"/><Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="PlaceholderForeground" Value="#655D76"/><Setter Property="CaretBrush" Value="#5A3FC0"/>
+      <Setter Property="SelectionBrush" Value="#D8CCFF"/><Setter Property="SelectionForegroundBrush" Value="#29243D"/>
+      <Setter Property="CornerRadius" Value="12"/><Setter Property="MinHeight" Value="44"/><Setter Property="Padding" Value="14,11"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="FocusAdorner" Value="{x:Null}"/>
+      <Setter Property="Template"><ControlTemplate>
+        <Border Name="InputSurface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+          <ScrollViewer Name="PART_ScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+            <Panel>
+              <TextBlock Text="{TemplateBinding PlaceholderText}" Foreground="{TemplateBinding PlaceholderForeground}" VerticalAlignment="Center" IsHitTestVisible="False">
+                <TextBlock.IsVisible><MultiBinding Converter="{x:Static conv:BoolConverters.And}"><Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Text" Converter="{x:Static conv:StringConverters.IsNullOrEmpty}"/><Binding ElementName="PART_TextPresenter" Path="PreeditText" Converter="{x:Static conv:StringConverters.IsNullOrEmpty}"/></MultiBinding></TextBlock.IsVisible>
+              </TextBlock>
+              <TextPresenter Name="PART_TextPresenter" Text="{TemplateBinding Text, Mode=TwoWay}" CaretIndex="{TemplateBinding CaretIndex}" SelectionStart="{TemplateBinding SelectionStart}" SelectionEnd="{TemplateBinding SelectionEnd}" PasswordChar="{TemplateBinding PasswordChar}" RevealPassword="{TemplateBinding RevealPassword}" TextAlignment="{TemplateBinding TextAlignment}" TextWrapping="{TemplateBinding TextWrapping}" SelectionBrush="{TemplateBinding SelectionBrush}" SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}" CaretBrush="{TemplateBinding CaretBrush}" VerticalAlignment="Center"/>
+            </Panel>
+          </ScrollViewer>
+        </Border>
+      </ControlTemplate></Setter>
+      <Style Selector="^:focus-within /template/ Border#InputSurface"><Setter Property="BorderBrush" Value="#5A3FC0"/><Setter Property="BorderThickness" Value="2"/></Style>
+      <Style Selector="^:disabled"><Setter Property="Opacity" Value="0.5"/></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type CheckBox}" TargetType="CheckBox">
+      <Setter Property="MinHeight" Value="40"/><Setter Property="FocusAdorner" Value="{x:Null}"/>
+      <Setter Property="Template"><ControlTemplate>
+        <Border Name="CheckFocus" BorderBrush="Transparent" BorderThickness="2" CornerRadius="8" Padding="3">
+          <DockPanel>
+            <Border Name="CheckSquare" Width="22" Height="22" CornerRadius="7" Background="#FFFFFF" BorderBrush="#8D869F" BorderThickness="1.5" Margin="0,0,10,0" VerticalAlignment="Center" DockPanel.Dock="Left">
+              <Path Name="Mark" Data="M 4,10 L 8,14 L 16,5" Stroke="White" StrokeThickness="2.4" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="False"/>
+            </Border>
+            <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" VerticalContentAlignment="Center"/>
+          </DockPanel>
+        </Border>
+      </ControlTemplate></Setter>
+      <Style Selector="^:checked /template/ Border#CheckSquare"><Setter Property="Background" Value="#5A3FC0"/><Setter Property="BorderBrush" Value="#5A3FC0"/></Style>
+      <Style Selector="^:checked /template/ Path#Mark"><Setter Property="IsVisible" Value="True"/></Style>
+      <Style Selector="^:focus-visible /template/ Border#CheckFocus"><Setter Property="BorderBrush" Value="#5A3FC0"/></Style>
+      <Style Selector="^:disabled"><Setter Property="Opacity" Value="0.45"/></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ButtonSpinner}" TargetType="ButtonSpinner">
+      <Setter Property="Template"><ControlTemplate>
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <RepeatButton Name="PART_DecreaseButton" Content="−" Width="42" Height="44" VerticalAlignment="Center" Background="#EEE7FF" Foreground="#39226F" CornerRadius="12" Padding="0" AutomationProperties.Name="Disminuir valor"/>
+          <ContentPresenter Name="PART_ContentPresenter" Grid.Column="1" Content="{TemplateBinding Content}" Margin="6,0" HorizontalContentAlignment="Stretch"/>
+          <RepeatButton Name="PART_IncreaseButton" Grid.Column="2" Content="+" Width="42" Height="44" VerticalAlignment="Center" Background="#EEE7FF" Foreground="#39226F" CornerRadius="12" Padding="0" AutomationProperties.Name="Aumentar valor"/>
+        </Grid>
+      </ControlTemplate></Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ComboBox}" TargetType="ComboBox">
+      <Setter Property="MinHeight" Value="44"/><Setter Property="Padding" Value="14,10"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#8D869F"/><Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/><Setter Property="MaxDropDownHeight" Value="320"/><Setter Property="FocusAdorner" Value="{x:Null}"/>
+      <Setter Property="Template"><ControlTemplate>
+        <Border Name="ChoiceSurface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}">
+          <Grid ColumnDefinitions="*,40">
+            <Border Margin="{TemplateBinding Padding}" ClipToBounds="True"><ContentPresenter Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/></Border>
+            <ToggleButton Grid.Column="1" IsChecked="{TemplateBinding IsDropDownOpen, Mode=TwoWay}" Focusable="False" Background="Transparent" BorderThickness="0" Padding="10" AutomationProperties.Name="Abrir opciones">
+              <Path Data="M 1,3 L 6,8 L 11,3" Stroke="#5A3FC0" StrokeThickness="1.8" Width="12" Height="10"/>
+            </ToggleButton>
+            <Popup Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}" IsLightDismissEnabled="True" PlacementTarget="{TemplateBinding}" MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+              <Border Background="White" BorderBrush="#8D869F" BorderThickness="1" CornerRadius="14" Padding="6">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ScrollViewer.IsScrollChainingEnabled="False"><ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}"/></ScrollViewer>
+              </Border>
+            </Popup>
+          </Grid>
+        </Border>
+      </ControlTemplate></Setter>
+      <Style Selector="^:focus-visible /template/ Border#ChoiceSurface"><Setter Property="BorderBrush" Value="#5A3FC0"/><Setter Property="BorderThickness" Value="2"/></Style>
+      <Style Selector="^:disabled"><Setter Property="Opacity" Value="0.45"/></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ComboBoxItem}" TargetType="ComboBoxItem">
+      <Setter Property="Padding" Value="12,10"/><Setter Property="FocusAdorner" Value="{x:Null}"/>
+      <Setter Property="Template"><ControlTemplate><Border Name="ChoiceItem" Background="Transparent" CornerRadius="8" Padding="{TemplateBinding Padding}"><ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"/></Border></ControlTemplate></Setter>
+      <Style Selector="^:selected /template/ Border#ChoiceItem"><Setter Property="Background" Value="#EEE7FF"/></Style>
+      <Style Selector="^:pointerover /template/ Border#ChoiceItem"><Setter Property="Background" Value="#F4F1FB"/></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type NumericUpDown}" TargetType="NumericUpDown">
+      <Setter Property="Template"><ControlTemplate>
+        <ButtonSpinner Name="PART_Spinner" AllowSpin="{TemplateBinding AllowSpin}" ShowButtonSpinner="{TemplateBinding ShowButtonSpinner}" IsTabStop="False">
+          <TextBox Name="PART_TextBox" Text="{TemplateBinding Text}" TextAlignment="Center" IsReadOnly="{TemplateBinding IsReadOnly}" AutomationProperties.Name="{TemplateBinding (AutomationProperties.Name)}"/>
+        </ButtonSpinner>
+      </ControlTemplate></Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ListBox}" TargetType="ListBox">
+      <Setter Property="Template"><ControlTemplate><ScrollViewer Name="PART_ScrollViewer"><ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}"/></ScrollViewer></ControlTemplate></Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ListBoxItem}" TargetType="ListBoxItem">
+      <Setter Property="Padding" Value="8"/><Setter Property="FocusAdorner" Value="{x:Null}"/>
+      <Setter Property="Template"><ControlTemplate><Border Name="FileSurface" Background="#F4F1FB" BorderBrush="Transparent" BorderThickness="2" CornerRadius="12" Margin="0,3" Padding="{TemplateBinding Padding}"><ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"/></Border></ControlTemplate></Setter>
+      <Style Selector="^:selected /template/ Border#FileSurface"><Setter Property="Background" Value="#EEE7FF"/><Setter Property="BorderBrush" Value="#5A3FC0"/></Style>
+      <Style Selector="^:focus-visible /template/ Border#FileSurface"><Setter Property="BorderBrush" Value="#29243D"/></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type Expander}" TargetType="Expander">
+      <Setter Property="Template"><ControlTemplate><StackPanel Spacing="12">
+        <ToggleButton Name="PART_HeaderSite" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Background="#F4F1FB" Foreground="#39226F" BorderThickness="0" CornerRadius="12" Padding="14" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{TemplateBinding Header}">
+          <Grid ColumnDefinitions="*,Auto"><ContentPresenter Content="{TemplateBinding Header}"/><TextBlock Name="Chevron" Grid.Column="1" Text="＋" Margin="16,0,0,0"/></Grid>
+        </ToggleButton>
+        <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" IsVisible="{TemplateBinding IsExpanded}" Margin="12,0"/>
+      </StackPanel></ControlTemplate></Setter>
+      <Style Selector="^:expanded /template/ TextBlock#Chevron"><Setter Property="Text" Value="−"/></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ProgressBar}" TargetType="ProgressBar">
+      <Setter Property="Template"><ControlTemplate><Border Background="#EEE7FF" Height="8" CornerRadius="4"><Border Name="PART_Indicator" Background="#5A3FC0" CornerRadius="4" HorizontalAlignment="Left" Width="80"/></Border></ControlTemplate></Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type Thumb}" TargetType="Thumb">
+      <Setter Property="Template"><ControlTemplate><Border Background="#856DAF" CornerRadius="4" MinWidth="8" MinHeight="8" Margin="2"/></ControlTemplate></Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ScrollBar}" TargetType="ScrollBar">
+      <Setter Property="Template"><ControlTemplate><Track Name="PART_Track" Orientation="{TemplateBinding Orientation}" Minimum="{TemplateBinding Minimum}" Maximum="{TemplateBinding Maximum}" Value="{TemplateBinding Value, Mode=TwoWay}" ViewportSize="{TemplateBinding ViewportSize}"><Track.Thumb><Thumb/></Track.Thumb></Track></ControlTemplate></Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type ToolTip}" TargetType="ToolTip">
+      <Setter Property="Template"><ControlTemplate><Border Background="#29243D" CornerRadius="10" Padding="12,8"><ContentPresenter Content="{TemplateBinding Content}" Foreground="White"/></Border></ControlTemplate></Setter>
+    </ControlTheme>
+  </Styles.Resources>
+</Styles>

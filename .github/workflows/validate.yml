@@ -1,0 +1,33 @@
+name: Validate release candidate
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  native-checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Linux native dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libfontconfig1 libx11-6 libice6 libsm6 libicu74 libgomp1
+      - run: dotnet restore tests/AiOPDF.Checks --locked-mode
+      - run: dotnet build tests/AiOPDF.Checks -c Release --no-restore -warnaserror
+      - name: Sequential native engine and interface checks
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          foreach ($mode in @('general','comparison','audit','readiness','corpus','stability','improvements','ui')) {
+            if ($mode -eq 'general') { dotnet run --no-build --project tests/AiOPDF.Checks -c Release *> "artifacts/ci-$mode.log" }
+            else { dotnet run --no-build --project tests/AiOPDF.Checks -c Release -- "--$mode" *> "artifacts/ci-$mode.log" }
+            if ($LASTEXITCODE -ne 0) { Get-Content "artifacts/ci-$mode.log" -Tail 40; exit $LASTEXITCODE }
+          }
+      - name: Vulnerability inventory
+        run: dotnet list src/AiOPDF/AiOPDF.csproj package --vulnerable --include-transitive

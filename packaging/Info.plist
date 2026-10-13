@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleName</key><string>AiOPDF</string>
+<key>CFBundleDisplayName</key><string>AiOPDF</string>
+<key>CFBundleIdentifier</key><string>app.aiopdf.desktop</string>
+<key>CFBundleVersion</key><string>0.6.4</string>
+<key>CFBundleShortVersionString</key><string>0.6.4</string>
+<key>CFBundleExecutable</key><string>AiOPDF</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>NSHighResolutionCapable</key><true/>
+<key>CFBundleIconFile</key><string>AiOPDF.icns</string>
+</dict></plist>
+
+
+
+
+
+

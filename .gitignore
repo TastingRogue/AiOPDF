@@ -1,0 +1,15 @@
+.tools/
+bin/
+obj/
+artifacts/
+dotnet-install.ps1
+output/
+.vs/
+.idea/
+*.user
+*.suo
+.env
+.env.*
+*.pfx
+*.p12
+*.pem
